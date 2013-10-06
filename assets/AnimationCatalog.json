@@ -1,0 +1,36 @@
+{"catalog":[
+    {
+        "elemType":1,
+        "elemState":0,
+        "elemSubstate":0,
+        "animType":0,
+        "isBackwards":false,
+        "currentFrame":0,
+        "framerate":400,
+        "maxFrames":2,
+        "tilesX":1,
+        "tilesY":2,
+        "tileWidth":105,
+        "tileHeight":105,
+        "offsetX":0,
+        "offsetY":0,
+        "file":"calavera.png"
+    },
+    {
+        "elemType":2,
+        "elemState":0,
+        "elemSubstate":0,
+        "animType":0,
+        "isBackwards":false,
+        "currentFrame":0,
+        "framerate":150,
+        "maxFrames":10,
+        "tilesX":1,
+        "tilesY":10,
+        "tileWidth":140,
+        "tileHeight":49,
+        "offsetX":0,
+        "offsetY":0,
+        "file":"entry.png"
+    }
+]}
