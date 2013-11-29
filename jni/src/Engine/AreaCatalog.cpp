@@ -1,10 +1,11 @@
 #include "AreaCatalog.h"
 #include "../Util/CFile.h"
-//#include "../Util/CTexture.h"
+#include "../Util/PathUtil.h"
+//#include "../Util/TextureUtil.h"
 //#include "../Util/CLog.h"
 
 std::unordered_map<int, AreaDef> AreaCatalog::m_areaDef;
-std::string AreaCatalog::m_filename = "AreaCatalog.json";
+std::string AreaCatalog::m_filename = PathUtil::GetAreaCatalog();
 SDL_Renderer* AreaCatalog::m_renderer;
 
 void AreaCatalog::Init(SDL_Renderer* renderer) {

@@ -5,6 +5,7 @@
 #include "SDL.h"
 #include "SDL_config.h"
 #include "SDL_image.h"
+#include "I18NCatalog.h"
 //#include "Python.h"
 
 #if SDL_VIDEO_DRIVER_UIKIT || SDL_VIDEO_DRIVER_ANDROID || SDL_VIDEO_DRIVER_PANDORA || __SDL_NOGETPROCADDR__
@@ -103,6 +104,13 @@ class RocketSDLSystemInterface : public Rocket::Core::SystemInterface
                  */
                 virtual float GetElapsedTime() {
                         return static_cast<float>( SDL_GetTicks() ) / 1000.0f;
+                }
+                virtual int TranslateString(Rocket::Core::String& translated, const Rocket::Core::String& input) {
+                    translated.Clear();
+                    std::string stdString(input.CString());
+                    translated.Append(I18NCatalog::Replace(stdString).c_str());
+                    //translated = input;
+                    return 0;
                 }
 };
 

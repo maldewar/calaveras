@@ -95,16 +95,16 @@ void InjectRocket( Rocket::Core::Context* context, SDL_Event& event )
         case SDL_FINGERMOTION:
             if (event.tfinger.fingerId == 0) {
                 const Rocket::Core::Vector2i& size = context->GetDimensions();
-                int x = event.tfinger.x * size.x / 32768;
-                int y = event.tfinger.y * size.y / 32768;
+                int x = event.tfinger.x * size.x;// / 32768;
+                int y = event.tfinger.y * size.y;// / 32768;
                 context->ProcessMouseMove( x, y, Rocket::Core::Input::KeyModifier(0) );
             }
             break;
         case SDL_FINGERDOWN:
             if (event.tfinger.fingerId == 0) {
                 const Rocket::Core::Vector2i& size = context->GetDimensions();
-                int x = event.tfinger.x * size.x / 32768;
-                int y = event.tfinger.y * size.y / 32768;
+                int x = event.tfinger.x * size.x;// / 32768;
+                int y = event.tfinger.y * size.y;// / 32768;
                 context->ProcessMouseMove( x, y, Rocket::Core::Input::KeyModifier(0) );
                 context->ProcessMouseButtonDown( 0, Rocket::Core::Input::KeyModifier(0) );
             }
@@ -112,8 +112,8 @@ void InjectRocket( Rocket::Core::Context* context, SDL_Event& event )
         case SDL_FINGERUP:
             if (event.tfinger.fingerId == 0) {
                 const Rocket::Core::Vector2i& size = context->GetDimensions();
-                int x = event.tfinger.x * size.x / 32768;
-                int y = event.tfinger.y * size.y / 32768;
+                int x = event.tfinger.x * size.x;// / 32768;
+                int y = event.tfinger.y * size.y;// / 32768;
                 context->ProcessMouseMove( x, y, Rocket::Core::Input::KeyModifier(0) );
                 context->ProcessMouseButtonUp( 0, Rocket::Core::Input::KeyModifier(0) );
             }

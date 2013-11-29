@@ -1,12 +1,13 @@
 #ifndef _CANIMATION_H_
     #define _CANIMATION_H_
 
-#define ANIM_TYPE_LINEAR 0x00
-#define ANIM_TYPE_LOOP   0x01
-#define ANIM_TYPE_WAVE   0x02
-
 #include <SDL.h>
 #include "CSprite.h"
+
+const int ANIM_TYPE_LINEAR = 0;
+const int ANIM_TYPE_LOOP   = 1;
+const int ANIM_TYPE_WAVE   = 2;
+
 /**
  *  A test class. A more elaborate class description.
  */
