@@ -26,7 +26,7 @@ b2Body* CBoxMaker::MakeArea(CArea* area, b2World* bWorld) {
     b2Vec2 vs[area->GetTotalPoints()];
     int pointIndex = 0;
     for(auto &point : area->GetPoints()) {
-        vs[pointIndex].Set(point.x, point.y);
+        vs[pointIndex].Set(point->x, point->y);
         pointIndex++;
     }
     if (area->IsClosed())

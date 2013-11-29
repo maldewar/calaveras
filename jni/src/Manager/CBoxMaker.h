@@ -6,13 +6,13 @@
 class CArea;
 class CUnit;
 
-#define UNIT_SENSOR_BODY       100
-#define UNIT_SENSOR_FEET       101
-#define UNIT_SENSOR_LEFT_HAND  102
-#define UNIT_SENSOR_RIGHT_HAND 103
-#define UNIT_SENSOR_HEAD       104
+const int UNIT_SENSOR_BODY       = 100;
+const int UNIT_SENSOR_FEET       = 101;
+const int UNIT_SENSOR_LEFT_HAND  = 102;
+const int UNIT_SENSOR_RIGHT_HAND = 103;
+const int UNIT_SENSOR_HEAD       = 104;
 
-#define AREA_SENSOR_BODY 200
+const int AREA_SENSOR_BODY = 200;
 
 class CBoxMaker {
     private:
