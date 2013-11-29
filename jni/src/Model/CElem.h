@@ -1,12 +1,13 @@
 #ifndef _CELEM_H_
     #define _CELEM_H_
 
-#define ELEM_TYPE_DEFAULT 0
-#define ELEM_TYPE_UNIT    1
-#define ELEM_TYPE_ENTRY   2
+const int ELEM_TYPE_DEFAULT = 0;
+const int ELEM_TYPE_UNIT    = 1;
+const int ELEM_TYPE_ENTRY   = 2;
+const int ELEM_TYPE_EXIT    = 3;
 
-#include "CLayer.h"
-class CLayer;
+#include "Layer.h"
+class Layer;
 
 /**
  * Models any element contained in a Layer.
@@ -21,7 +22,7 @@ class CElem {
         float m_height;
         float m_scale;
         float m_rotation;
-        CLayer* m_layer;
+        Layer* m_layer;
 
     public:
         /**
@@ -33,16 +34,16 @@ class CElem {
          * Binds this Element to its parent Layer.
          * @param layer Parent layer.
          */
-        CElem(CLayer* layer);
+        CElem(Layer* layer);
         /**
          * Class destructor.
          */
-        void SetLayer(CLayer* layer);
+        void SetLayer(Layer* layer);
         /**
          * Gets the parent Layer of this Element.
          * @return Parent Layer.
          */
-        CLayer* GetLayer();
+        Layer* GetLayer();
         /**
          * Sets the X cartesian coordinate in meters for the Element.
          * @param x X coordinate in meters.

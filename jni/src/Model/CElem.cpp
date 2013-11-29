@@ -9,15 +9,15 @@ CElem::CElem() {
     m_layer = NULL;
 }
 
-CElem::CElem(CLayer* layer) : CElem() {
+CElem::CElem(Layer* layer) : CElem() {
     m_layer = layer;
 }
 
-void CElem::SetLayer(CLayer* layer) {
+void CElem::SetLayer(Layer* layer) {
     m_layer = layer;
 }
 
-CLayer* CElem::GetLayer() {
+Layer* CElem::GetLayer() {
     return m_layer;
 }
 

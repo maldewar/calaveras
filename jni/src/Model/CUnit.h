@@ -5,21 +5,21 @@
 #include "CElem.h"
 #include "../Engine/CAnimation.h"
 
-#define UNIT_STATE_LOOSE 0
-#define UNIT_STATE_AFOOT 1
+const int UNIT_STATE_LOOSE = 0;
+const int UNIT_STATE_AFOOT = 1;
 
-#define UNIT_SUBSTATE_FALL      0
-#define UNIT_SUBSTATE_ROLL      1
-#define UNIT_SUBSTATE_JUMP_UP   2
-#define UNIT_SUBSTATE_JUMP_DOWN 3
+const int UNIT_SUBSTATE_FALL      = 0;
+const int UNIT_SUBSTATE_ROLL      = 1;
+const int UNIT_SUBSTATE_JUMP_UP   = 2;
+const int UNIT_SUBSTATE_JUMP_DOWN = 3;
 
-#define UNIT_SUBSTATE_STILL     0
-#define UNIT_SUBSTATE_WALK      1
-#define UNIT_SUBSTATE_TURN      2
-#define UNIT_SUBSTATE_POST_FALL 3
-#define UNIT_SUBSTATE_PRE_JUMP  4
-#define UNIT_SUBSTATE_POST_JUMP 5
-#define UNIT_SUBSTATE_STAND     6
+const int UNIT_SUBSTATE_STILL     = 0;
+const int UNIT_SUBSTATE_WALK      = 1;
+const int UNIT_SUBSTATE_TURN      = 2;
+const int UNIT_SUBSTATE_POST_FALL = 3;
+const int UNIT_SUBSTATE_PRE_JUMP  = 4;
+const int UNIT_SUBSTATE_POST_JUMP = 5;
+const int UNIT_SUBSTATE_STAND     = 6;
 
 /**
  * Models an Unit to the scene.
@@ -49,7 +49,7 @@ class CUnit : public CElem
          * Binds this Unit to its parent Layer.
          * @param layer Parent Layer.
          */
-        CUnit(CLayer* layer);
+        CUnit(Layer* layer);
         /**
          * Class destructor.
          */
@@ -80,7 +80,7 @@ class CUnit : public CElem
         int GetSubstate();
         /**
          * Gets the Animation instance for this Unit's actual state.
-         * @returns Animation instance for this Unit's actual state.
+         * @return Animation instance for this Unit's actual state.
          */
         CAnimation* GetAnimation();
         /**

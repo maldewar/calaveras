@@ -5,8 +5,8 @@
 #include <Box2D.h>
 #include "Vector2.h"
 #include "../Manager/CBoxMaker.h"
-#include "CLayer.h"
-class CLayer;
+#include "Layer.h"
+class Layer;
 
 /**
  * Models a surface or area contained by a surface in which object
@@ -15,14 +15,14 @@ class CLayer;
 class CArea {
     private:
         bool m_isClosed;
-        std::vector<Vector2> m_points;
+        std::vector<Vector2*> m_points;
         int m_material;
         int m_nature;
         int m_totalPoints;
         float m_linearDamping;
         float m_angularDamping;
         b2Body* m_body;
-        CLayer* m_layer;
+        Layer* m_layer;
 
     public:
         /**
@@ -34,7 +34,7 @@ class CArea {
          * Binds this Area to its parent Layer.
          * @param layer Parent layer.
          */
-        CArea(CLayer* layer);
+        CArea(Layer* layer);
         /**
          * Class destructor.
          */
@@ -43,12 +43,12 @@ class CArea {
          * Sets the parent Layer for this Area.
          * @param layer Parent layer.
          */
-        void SetLayer(CLayer* layer);
+        void SetLayer(Layer* layer);
         /**
          * Gets the parent Layer for this Area.
          * @returns Parent layer.
          */
-        CLayer* GetLayer();
+        Layer* GetLayer();
         /**
          * Sets the Box2D body for this Area.
          */
@@ -68,12 +68,12 @@ class CArea {
          * Adds a point taking the coordinate values from a Vector.
          * @param vector Vector with cartesian values in meters.
          */
-        void AddPoint(Vector2 vector);
+        void AddPoint(Vector2* vector);
         /**
          * Gets all points in an Area.
          * @returns Vector list with cartesian values in meters.
          */
-        std::vector<Vector2> GetPoints();
+        std::vector<Vector2*> GetPoints();
         /**
          * Gets the total of points thet compose the Area.
          * @returns Total of points.

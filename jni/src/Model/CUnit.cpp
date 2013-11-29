@@ -1,7 +1,7 @@
 #include "CUnit.h"
 #include "../Manager/CBoxMaker.h"
-#include "../Util/CTexture.h"
-#include "../Engine/CAnimationCatalog.h"
+#include "../Util/TextureUtil.h"
+#include "../Engine/AnimationCatalog.h"
 #include "../Util/CLog.h"
 
 float CUnit::ANGULAR_VELOCITY_TOLERANCE = 6.0f;
@@ -21,7 +21,7 @@ CUnit::CUnit() : CElem() {
     SetAnimation();
 }
 
-CUnit::CUnit(CLayer* layer) : CUnit() {
+CUnit::CUnit(Layer* layer) : CUnit() {
     m_layer = layer;
 }
 
@@ -42,7 +42,7 @@ b2Body* CUnit::GetBody() {
 }
 
 void CUnit::SetAnimation() {
-    m_animation = CAnimationCatalog::GetByType(m_type);
+    m_animation = AnimationCatalog::GetByType(m_type);
     if (m_animation) {
         m_animation->GetSprite()->SetDstWidth(CMath::MToPxInt(0.15f));
         m_animation->GetSprite()->SetDstHeight(CMath::MToPxInt(0.15f));

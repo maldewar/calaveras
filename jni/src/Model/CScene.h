@@ -2,8 +2,12 @@
     #define _CSCENE_H_
 #include <string>
 #include <vector>
-#include "CWorldLayer.h"
-class CWorldLayer;
+#include "FgLayer.h"
+#include "WorldLayer.h"
+#include "BgLayer.h"
+class FgLayer;
+class WorldLayer;
+class BgLayer;
 #include "Vector2.h"
 
 /**
@@ -15,9 +19,10 @@ class CScene {
         std::string m_name;
         float m_width;
         float m_height;
-        Vector2 m_gravity;
-        std::vector<CWorldLayer*> m_worldLayers;
-        CWorldLayer* m_layer;
+        std::vector<FgLayer*> m_fgLayers;
+        std::vector<WorldLayer*> m_worldLayers;
+        std::vector<BgLayer*> m_bgLayers;
+        static Vector2* m_gravity;
 
     public:
         /**
@@ -28,6 +33,17 @@ class CScene {
          * Class destructor.
          */
         ~CScene();
+        /**
+         * Set the global gravity vector for the scene.
+         * @param x X vector component.
+         * @param y Y vector component.
+         */
+        static void SetGravity(float x, float y);
+        /**
+         * Gets the global gravity set for the scene.
+         * @returns Gravity vector.
+         */
+        static Vector2* GetGravity();
         /**
          * Sets the version of the descriptor from which the scene got loaded.
          * @param version Version of the descriptor.
@@ -69,15 +85,35 @@ class CScene {
          */
         float GetHeight();
         /**
+         * Adds a FgLayer instance to the scene layers.
+         * @param fgLayer FgLayer instance to add.
+         */
+        void AddFgLayer(FgLayer* fgLayer);
+        /**
+         * Gets all the FgLayer instances contained in this scene.
+         * @return FgLayer instances in this scene.
+         */
+        std::vector<FgLayer*> GetFgLayers();
+        /**
          * Adds a WorldLayer instance to the scene layers.
          * @param worldLayer WorldLayer instance to add.
          */
-        void AddWorldLayer(CWorldLayer* worldLayer);
+        void AddWorldLayer(WorldLayer* worldLayer);
         /**
          * Gets all the WorldLayer instances contained in this scene.
          * @return WorldLayer instances in this scene.
          */
-        std::vector<CWorldLayer*> GetWorldLayers();
+        std::vector<WorldLayer*> GetWorldLayers();
+        /**
+         * Adds a BgLayer instance to the scene layers.
+         * @param bgLayer BgLayer instance to add.
+         */
+        void AddBgLayer(BgLayer* bgLayer);
+        /**
+         * Gets all the BgLayer instances contained in this scene.
+         * @return BgLayer instances in this scene.
+         */
+        std::vector<BgLayer*> GetBgLayers();
         void OnInit();
         void OnLoop();
 

@@ -11,15 +11,15 @@ CArea::CArea() {
     m_layer = NULL;
 }
 
-CArea::CArea(CLayer* layer) : CArea() {
+CArea::CArea(Layer* layer) : CArea() {
     m_layer = layer;
 }
 
-void CArea::SetLayer(CLayer* layer) {
+void CArea::SetLayer(Layer* layer) {
     m_layer = layer;
 }
 
-CLayer* CArea::GetLayer() {
+Layer* CArea::GetLayer() {
     return m_layer;
 }
 
@@ -32,16 +32,16 @@ b2Body* CArea::GetBody() {
 }
 
 void CArea::AddPoint(float x, float y) {
-    m_points.push_back({x, y});
+    m_points.push_back(new Vector2(x, y));
     m_totalPoints++;
 }
 
-void CArea::AddPoint(Vector2 vector) {
+void CArea::AddPoint(Vector2* vector) {
     m_points.push_back(vector);
     m_totalPoints++;
 }
 
-std::vector<Vector2> CArea::GetPoints() {
+std::vector<Vector2*> CArea::GetPoints() {
     return m_points;
 }
 
