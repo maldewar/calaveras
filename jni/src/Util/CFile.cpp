@@ -25,3 +25,7 @@ std::string CFile::ReadText(const char* filePath) {
     // Success!
     return content;
 };
+
+std::string CFile::ReadText(std::string filePath) {
+    return ReadText(filePath.c_str());
+};

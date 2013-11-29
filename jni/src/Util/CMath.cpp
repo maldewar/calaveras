@@ -15,36 +15,15 @@ void CMath::SetFactor(int pixWidth, int pixHeight) {
     m_pxToM = 1/m_mToPx;
 };
 
-float CMath::PxToM(float value) {
-    return value * m_pxToM;
+Vector2* CMath::GetPointAt(float x, float y, float distance, float angle) {
+    x += distance * cos(angle);
+    y += distance * sin(angle);
+    Vector2* v = new Vector2(x, y);
+    return v;
 };
 
-float CMath::MToPx(float value) {
-    return value * m_mToPx;
-}
-
-int CMath::PxToMInt(float value) {
-    return (int)PxToM(value);
-}
-
-int CMath::MToPxInt(float value) {
-    return (int)MToPx(value);
-}
-
-float CMath::ToCartesian(float y, float height) {
-    return height - y;
-}
-
-float CMath::ToCanvas(float y, float height) {
-    return (y - height) * -1;
-};
-
-float CMath::ToDeg(float rad) {
-    return rad * RADTODEG;
-};
-
-float CMath::ToRad(float deg) {
-    return deg * DEGTORAD;
+Vector2* CMath::GetPointAt(Vector2* base, float distance, float angle) {
+    return GetPointAt(base->x, base->y, distance, angle);
 };
 
 float CMath::Random(float a, float b) {
@@ -52,8 +31,4 @@ float CMath::Random(float a, float b) {
     float diff = b - a;
     float r = random * diff;
     return (a + r);
-};
-
-float CMath::GetAbsoluteAngle(float x1, float y1, float x2, float y2) {
-    return atan2(fabs(y2-y1), fabs(x2-x1));
 };

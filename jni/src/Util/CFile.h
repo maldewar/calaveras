@@ -8,5 +8,6 @@ class CFile {
 
     public:
         static std::string ReadText(const char* filePath);
+        static std::string ReadText(std::string filePath);
 };
 #endif
