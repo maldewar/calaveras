@@ -1,5 +1,5 @@
 #include "CApp.h"
-#include "Util/CTexture.h"
+#include "Util/TextureUtil.h"
 #include "Util/CText.h"
 
 void CApp::OnRender(SDL_Renderer* Renderer) {
@@ -7,8 +7,7 @@ void CApp::OnRender(SDL_Renderer* Renderer) {
     SDL_RenderClear(Renderer);
     SDL_SetRenderDrawColor(Renderer, 0xA0, 0xA0, 0xA0, 0xFF);
     //SDL_RenderDrawLine(Renderer, 0, 0, 500, 500);
-    CTexture::OnDraw(0, 0, m_text, Renderer);
-    //CTexture::OnDraw(0,0,m_texture,Renderer);
+    //TextureUtil::OnDraw(0, 0, m_text, Renderer);
 
     SDL_Rect DestR;
     DestR.x = 0;
@@ -16,9 +15,10 @@ void CApp::OnRender(SDL_Renderer* Renderer) {
     //SDL_BlitSurface(m_text, NULL, m_surface, &DestR);
 
     AppStateManager::OnRender(Renderer);
+    TextureUtil::OnDraw(0, 0, m_text, Renderer);
     /* Update the screen! */
     SDL_RenderPresent(Renderer);
-    SDL_Delay(10);
+    //SDL_Delay(10);
     if (FPSManager::Limit() == true) {
         char fpsText[32];
         sprintf(fpsText,"FPS: %i, Ticks: %i",FPSManager::GetFPS(), SDL_GetTicks());

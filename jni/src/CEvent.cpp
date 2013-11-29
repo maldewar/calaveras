@@ -1,4 +1,5 @@
 #include "CEvent.h"
+#include "Util/CLog.h"
  
 CEvent::CEvent() {
 }
@@ -8,6 +9,7 @@ CEvent::~CEvent() {
 }
  
 void CEvent::OnEvent(SDL_Event* Event) {
+    OnBeforeEvent(Event);
     switch(Event->type) {
         /*case SDL_ACTIVEEVENT: {
             switch(Event->active.state) {
@@ -33,15 +35,17 @@ void CEvent::OnEvent(SDL_Event* Event) {
             break;
         }*/
  
-        /*case SDL_KEYDOWN: {
-            OnKeyDown(Event->key.keysym.sym,Event->key.keysym.keymod,Event->key.keysym.unicode);
+        case SDL_KEYDOWN: {
+            OnKeyDown(Event->key.keysym.scancode, Event->key.keysym.sym, Event->key.keysym.mod);
             break;
         }
  
         case SDL_KEYUP: {
-            OnKeyUp(Event->key.keysym.sym,Event->key.keysym.keymod,Event->key.keysym.unicode);
+            OnKeyUp(Event->key.keysym.scancode, Event->key.keysym.sym, Event->key.keysym.mod);
             break;
-        }*/
+        }
+
+        /* SDL_TEXTINPUT */
  
         case SDL_MOUSEMOTION: {
             OnMouseMove(Event->motion.x,Event->motion.y,Event->motion.xrel,Event->motion.yrel,(Event->motion.state&SDL_BUTTON(SDL_BUTTON_LEFT))!=0,(Event->motion.state&SDL_BUTTON(SDL_BUTTON_RIGHT))!=0,(Event->motion.state&SDL_BUTTON(SDL_BUTTON_MIDDLE))!=0);
@@ -143,6 +147,15 @@ void CEvent::OnEvent(SDL_Event* Event) {
             break;
         }
     }
+    OnAfterEvent(Event);
+}
+
+void CEvent::OnBeforeEvent(SDL_Event* Event) {
+    //Pure virtual, do nothing
+}
+
+void CEvent::OnAfterEvent(SDL_Event* Event) {
+    //Pure virtual, do nothing
 }
  
 void CEvent::OnInputFocus() {
@@ -153,11 +166,12 @@ void CEvent::OnInputBlur() {
     //Pure virtual, do nothing
 }
  
-void CEvent::OnKeyDown(SDL_Keycode sym, SDL_Keymod mod, Uint16 unicode) {
+void CEvent::OnKeyDown(SDL_Scancode scancode, SDL_Keycode sym, Uint16 mod) {
     //Pure virtual, do nothing
+    CLog::Log("Key pressed scancode %d keycode %d", scancode, sym);
 }
  
-void CEvent::OnKeyUp(SDL_Keycode sym, SDL_Keymod mod, Uint16 unicode) {
+void CEvent::OnKeyUp(SDL_Scancode scancode, SDL_Keycode sym, Uint16 mod) {
     //Pure virtual, do nothing
 }
  

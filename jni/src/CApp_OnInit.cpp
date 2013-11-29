@@ -1,8 +1,11 @@
 #include "CApp.h"
-#include "Util/CTexture.h"
+#include "Util/TextureUtil.h"
 #include "Util/CText.h"
-#include "Engine/CAnimationCatalog.h"
+#include "Manager/ConfigManager.h"
+#include "Engine/AnimationCatalog.h"
 #include "Engine/AreaCatalog.h"
+#include "Engine/BgCatalog.h"
+#include "Engine/I18NCatalog.h"
 
 bool CApp::OnInit() {
     if(SDL_Init(SDL_INIT_EVERYTHING) < 0) {
@@ -12,23 +15,26 @@ bool CApp::OnInit() {
         //TODO set window title from constant
         return false;
     }
+    //SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1); //Antialising stuff.
+    //SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 8); //Antialising stuff.
     int w,h;
     SDL_GetWindowSize(m_window, &w, &h);
+    AppStateManager::SetWindowWidth(w);
+    AppStateManager::SetWindowHeight(h);
     CMath::SetFactor(w, h);
     if((m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)) == NULL ) {
         return false;
     }
-    CAnimationCatalog::Init(m_renderer);
+    ConfigManager::Init();
+    AnimationCatalog::Init(m_renderer);
     AreaCatalog::Init(m_renderer);
+    BgCatalog::Init(m_renderer);
+    I18NCatalog::AddFile("ui","ui.json");
+    I18NCatalog::Init();
     m_surface = SDL_GetWindowSurface(m_window);
     if(TTF_Init() == -1) {
         return false;
     }
-    if((m_texture = CTexture::LoadTexture("image.bmp",m_renderer)) == NULL) {
-        return false;
-    }
-    CTexture::LoadTexture("calavera.png", m_renderer);
-    CTexture::LoadTexture("entry.png", m_renderer);
     FPSManager::Init();
     m_text = CText::GetTextureSolid("Leela", "font/SourceSansPro-Regular.ttf", {255,255,0,255}, 22, m_renderer);
     AppStateManager::SetRenderer(m_renderer);

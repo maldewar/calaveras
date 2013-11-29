@@ -1,12 +1,13 @@
 #include "CApp.h"
 #include "Util/CText.h"
-#include "Util/CTexture.h"
+#include "Util/TextureUtil.h"
+#include "Engine/I18NCatalog.h"
 
 void CApp::OnCleanup() {
+    I18NCatalog::Flush();
     AppStateManager::SetActiveAppState(APPSTATE_NONE);
     CText::Flush();
-    CTexture::Flush();
-    SDL_DestroyTexture(m_texture);
+    TextureUtil::Flush();
     SDL_DestroyRenderer(m_renderer);
     SDL_DestroyWindow(m_window);
     SDL_Quit();

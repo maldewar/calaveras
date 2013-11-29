@@ -1,52 +1,75 @@
 #include "AppStateGame.h"
 #include "AppStateManager.h"
-#include "Manager/CSceneLoader.h"
-#include "Renderer/CSceneRenderer.h"
+#include "Manager/SceneLoader.h"
+#include "Event/EventChangeAppState.h"
+#include "Event/EventPauseGame.h"
+#include "Util/CMath.h"
+#include "Util/CLog.h"
  
 AppStateGame AppStateGame::Instance;
  
-AppStateGame::AppStateGame() {
+AppStateGame::AppStateGame() : AppState() {
+    m_sceneRenderer = new SceneRenderer();
+    m_camera = new Camera();
+    m_act = 0;
+    m_level = 0;
     m_scene = NULL;
+}
+ 
+void AppStateGame::OnActivate(SDL_Renderer* Renderer) {
     m_zoom = GAME_ZOOM_DEFAULT;
     m_viewport.x = 0;
     m_viewport.y = 0;
     m_viewport.w = 0;
     m_viewport.h = 0;
-    StartTime = 0;
-
+    m_startTime = 0;
+    m_pause = false;
     m_isZooming = false;
-}
- 
-void AppStateGame::OnActivate(SDL_Renderer* Renderer) {
-    CSceneLoader* sceneLoader = new CSceneLoader(1,1);
-    m_scene = sceneLoader->LoadScene();
+    CLog::Log("AppStateGame::OnActivate()");
+    SceneLoader* sceneLoader = new SceneLoader();
+    m_scene = sceneLoader->LoadScene(m_act, m_level);
     m_scene->OnInit();
     //delete sceneLoader;
-    CLog::Log("Scene width:%f, height:%f", m_scene->GetWidth(), m_scene->GetHeight());
-    StartTime = SDL_GetTicks();
+    m_sceneRenderer->Activate(m_scene, Renderer);
+    CLog::Log("New Scene Loaded width:%f, height:%f", m_scene->GetWidth(), m_scene->GetHeight());
+    m_startTime = SDL_GetTicks();
     SDL_GetRendererOutputSize(Renderer, &m_viewport.w, &m_viewport.h);
-    CLog::Log("Viewport width:%d, height:%d, x:%d, y:%d", m_viewport.w, m_viewport.h, m_viewport.x, m_viewport.y);
+    m_camera->SetWidth(m_viewport.w);
+    m_camera->SetHeight(m_viewport.h);
+    m_camera->SetSceneWidth(CMath::MToPx(m_scene->GetWidth()));
+    m_camera->SetSceneHeight(CMath::MToPx(m_scene->GetHeight()));
+    m_camera->SetBonus(0,0,200,200);
+    CLog::Log("RendererOutputSize w:%d h:%d", m_viewport.w, m_viewport.h);
+    LoadDocument("ui/game.html");
+    if (m_rocketDocument) {
+        EventChangeAppState* returnOnClick = new EventChangeAppState(APPSTATE_MAIN);
+        EventPauseGame* pauseOnClick = new EventPauseGame(this);
+        m_returnBtn = m_rocketDocument->GetElementById("returnBtn");
+        m_pauseBtn = m_rocketDocument->GetElementById("pauseBtn");
+        if (m_returnBtn)
+            m_returnBtn->AddEventListener("click", returnOnClick, false);
+        if (m_pauseBtn)
+            m_pauseBtn->AddEventListener("click", pauseOnClick, false);
+    }
 }
  
 void AppStateGame::OnDeactivate() {
+    CLog::Log("AppStateGame::OnDeactivate()");
+    m_sceneRenderer->Deactivate();
+    UnloadDocument();
+    //TODO: clean scene.
 }
  
 void AppStateGame::OnLoop() {
-    /*if(StartTime + 5000 < SDL_GetTicks()) {
-        AppStateManager::SetActiveAppState(APPSTATE_NONE);
-    }*/
-    m_scene->OnLoop();
+    if (!m_pause) {
+        m_scene->OnLoop();
+    }
+    UpdateDocument();
 }
  
-void AppStateGame::OnRender(SDL_Renderer* Renderer) {
-    //SDL_RenderSetLogicalSize(m_renderer, 640, 480);
-    SDL_RenderSetViewport(Renderer, &m_viewport);
-    SDL_RenderSetScale(Renderer, m_zoom, m_zoom);
-    if (m_scene) {
-        CSceneRenderer::Render(m_scene, Renderer);
-    }
-    SDL_RenderSetScale(Renderer, 1.0f, 1.0f);
-    SDL_RenderSetViewport(Renderer, NULL);
+void AppStateGame::OnRender(SDL_Renderer* renderer) {
+    m_sceneRenderer->Render(m_camera);
+    RenderDocument();
 }
  
 AppStateGame* AppStateGame::GetInstance() {
@@ -55,49 +78,33 @@ AppStateGame* AppStateGame::GetInstance() {
 
 void AppStateGame::OnFingerMove(float mX, float mY, float mDX, float mDY, SDL_FingerID mFingerId) {
     if (!m_isZooming) {
-        const float x = m_viewport.x + mDX * m_viewport.w;
-        const float y = m_viewport.y + mDY * m_viewport.h * -1;
-        if ((x * -1 + m_viewport.w)/m_zoom <= CMath::MToPx(m_scene->GetWidth()) && x <= 0) {
-            m_viewport.x = x;
-        }
-        if ((y + m_viewport.h)/m_zoom <= CMath::MToPx(m_scene->GetHeight()) && y >= 0)  {
-            m_viewport.y = y;
-        }
+        m_camera->Move(mDX, mDY);
     }
     m_isZooming = false;
 }
 
-void AppStateGame::OnMultiGesture(float mDTheta, float mDDist, float mX, float mY, Uint16 mFingers) {
+void AppStateGame::OnMultiGesture(float dTheta, float dDist, float x, float y, Uint16 fingers) {
     m_isZooming = true;
-    const float zoom = m_zoom + mDDist * GAME_ZOOM_FACTOR;
-    const float zoomX = m_viewport.w/zoom;
-    const float zoomY = m_viewport.h/zoom;
-    if (zoom < GAME_ZOOM_MAX 
-        && zoom > GAME_ZOOM_MIN 
-        && zoomX < CMath::MToPx(m_scene->GetWidth()) 
-        && zoomY < CMath::MToPx(m_scene->GetHeight())) {
-        const int xDir = (mX>0.5?1:-1);
-        const int yDir = (mY<0.5?1:-1);
-        const float x = m_viewport.x + ((zoomX - m_viewport.w/m_zoom) * (mX) * 2 * xDir);
-        const float y = m_viewport.y + ((zoomY - m_viewport.h/m_zoom) * (mY) * 2 * yDir);
-        //const float x = m_viewport.x + m_viewport.x * (m_zoom/zoom * mX * xDir);
-        //const float y = m_viewport.y + m_viewport.y * (m_zoom/zoom * mY * yDir);
-        //CLog::Log(" x offset:%f", ((zoomX - m_viewport.w/m_zoom) * (1-mX) * xDir));
-        if (x >= 0)
-            m_viewport.x = 0;
-        else
-            if ((x * -1 + m_viewport.w)/zoom <= CMath::MToPx(m_scene->GetWidth()))
-                m_viewport.x = x;
-            else
-                m_viewport.x = m_viewport.x + zoomX - m_viewport.w/m_zoom;
-        if (y <= 0)
-            m_viewport.y = 0;
-        else 
-            if ((y + m_viewport.h)/zoom < CMath::MToPx(m_scene->GetHeight()))
-                m_viewport.y = y;
-            else
-                m_viewport.y = CMath::MToPx(m_scene->GetHeight()) - m_viewport.h/m_zoom;
+    m_camera->StepZoom(dDist, x, y);
+}
 
-        m_zoom = zoom;
-    }
+void AppStateGame::Pause(bool pause) {
+    m_pause = pause;
+}
+
+void AppStateGame::TogglePause() {
+    if (m_pause)
+        m_pause = false;
+    else
+        m_pause = true;
+}
+
+void AppStateGame::SetParams(bool dummy, ...) {
+    CLog::Log("AppStateGame::SetParams");
+    va_list params;
+    va_start(params, dummy);
+    m_act = va_arg(params, int);
+    m_level = va_arg(params, int);
+    CLog::Log("Parameters set to act:%d level:%d", m_act, m_level);
+    va_end(params);
 }

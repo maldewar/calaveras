@@ -1,6 +1,6 @@
 #include "AppStateIntro.h"
 #include "AppStateManager.h"
-#include "Util/CTexture.h"
+#include "Util/TextureUtil.h"
  
 AppStateIntro AppStateIntro::Instance;
  
@@ -9,7 +9,7 @@ AppStateIntro::AppStateIntro() {
 }
  
 void AppStateIntro::OnActivate(SDL_Renderer* Renderer) {
-    m_textureLogo = CTexture::LoadTexture("logo.bmp", Renderer);
+    m_textureLogo = TextureUtil::LoadTexture("logo.bmp", Renderer);
     StartTime = SDL_GetTicks();
 }
  
@@ -22,13 +22,13 @@ void AppStateIntro::OnDeactivate() {
  
 void AppStateIntro::OnLoop() {
     if(StartTime + 1000 < SDL_GetTicks()) {
-        AppStateManager::SetActiveAppState(APPSTATE_GAME);
+        AppStateManager::SetActiveAppState(APPSTATE_MAIN);
     }
 }
  
 void AppStateIntro::OnRender(SDL_Renderer* Renderer) {
     if(m_textureLogo) {
-        CTexture::OnDraw(0, 0, m_textureLogo, Renderer);
+        TextureUtil::OnDraw(0, 0, m_textureLogo, Renderer);
     }
 }
  

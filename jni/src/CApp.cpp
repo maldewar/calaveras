@@ -5,7 +5,6 @@ CApp::CApp() {
     m_window = NULL;
     m_renderer = NULL;
     m_surface = NULL;
-    m_texture = NULL;
     m_text = NULL;
 }
  
