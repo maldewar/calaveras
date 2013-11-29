@@ -17,7 +17,6 @@ class CApp : public CEvent {
         SDL_Window* m_window;
         SDL_Renderer* m_renderer;
         SDL_Surface* m_surface;
-        SDL_Texture* m_texture;
         SDL_Texture* m_text;
 
     public:

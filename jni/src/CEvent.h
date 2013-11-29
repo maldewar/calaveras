@@ -5,11 +5,13 @@ class CEvent {
     public:
         CEvent();
         virtual ~CEvent();
+        virtual void OnBeforeEvent(SDL_Event* Event);
         virtual void OnEvent(SDL_Event* Event);
+        virtual void OnAfterEvent(SDL_Event* Event);
         virtual void OnInputFocus();
         virtual void OnInputBlur();
-        virtual void OnKeyDown(SDL_Keycode sym, SDL_Keymod mod, Uint16 unicode);
-        virtual void OnKeyUp(SDL_Keycode sym, SDL_Keymod mod, Uint16 unicode);
+        virtual void OnKeyDown(SDL_Scancode scancode, SDL_Keycode sym, Uint16 mod);
+        virtual void OnKeyUp(SDL_Scancode scancode, SDL_Keycode sym, Uint16 mod);
         virtual void OnMouseFocus();
         virtual void OnMouseBlur();
         virtual void OnMouseMove(int mX, int mY, int relX, int relY, bool Left,bool Right,bool Middle);
