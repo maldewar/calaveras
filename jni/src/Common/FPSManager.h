@@ -1,10 +1,10 @@
 #ifndef _CFPSMANAGER_H_
     #define _CFPSMANAGER_H_
 
-#define FPS_MAX 120
-
 #include <SDL.h>
 #include <stdint.h>
+
+const int FPS_MAX = 120;
 
 struct FPS_Data {
     uint32_t frameMin;
