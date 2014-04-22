@@ -1,13 +1,12 @@
 #include "AppStateMain.h"
 #include "AppStateManager.h"
 #include "Manager/ConfigManager.h"
-#include "Util/CLog.h"
+#include "Engine/ActorCatalog.h"
+#include "Util/Log.h"
 #include "Util/RocketUtil.h"
 #include "Event/EventChangeAppState.h"
 #include "Event/EventChangeAppStateToGame.h"
 #include "Event/EventSlotOnClick.h"
-#include "Event/EventMusicOnClick.h"
-#include "Event/EventSoundOnClick.h"
 #include "Event/EventPushStateOnClick.h"
 #include "Event/EventPopStateOnClick.h"
 #include "Event/EventSetSettings.h"
@@ -36,6 +35,7 @@ void AppStateMain::OnActivate(SDL_Renderer* renderer) {
         EventChangeAppStateToGame* test4OnClick = new EventChangeAppStateToGame(0,4);
         EventChangeAppStateToGame* test5OnClick = new EventChangeAppStateToGame(0,5);
         EventChangeAppStateToGame* test6OnClick = new EventChangeAppStateToGame(0,6);
+        EventChangeAppStateToGame* test7OnClick = new EventChangeAppStateToGame(0,7);
         EventPushStateOnClick* settingsOnClick = new EventPushStateOnClick(this, STATE_SETTINGS);
         EventPushStateOnClick* testOnClick = new EventPushStateOnClick(this, STATE_TEST);
         EventSetSettings* setSettings = new EventSetSettings(this);
@@ -57,6 +57,7 @@ void AppStateMain::OnActivate(SDL_Renderer* renderer) {
         m_test4Btn = m_rocketDocument->GetElementById("test4Btn");
         m_test5Btn = m_rocketDocument->GetElementById("test5Btn");
         m_test6Btn = m_rocketDocument->GetElementById("test6Btn");
+        m_test7Btn = m_rocketDocument->GetElementById("test7Btn");
         m_settingsBtn = m_rocketDocument->GetElementById("settingsBtn");
         m_musicBtn = m_rocketDocument->GetElementById("musicBtn");
         m_soundBtn = m_rocketDocument->GetElementById("soundBtn");
@@ -99,6 +100,8 @@ void AppStateMain::OnActivate(SDL_Renderer* renderer) {
             m_test5Btn->AddEventListener("click", test5OnClick, false);
         if (m_test6Btn)
             m_test6Btn->AddEventListener("click", test6OnClick, false);
+        if (m_test7Btn)
+            m_test7Btn->AddEventListener("click", test7OnClick, false);
         if (m_settingsBtn)
             m_settingsBtn->AddEventListener("click", settingsOnClick, false);
         if (m_musicBtn && !ConfigManager::IsMusicEnabled())
@@ -117,7 +120,7 @@ void AppStateMain::OnActivate(SDL_Renderer* renderer) {
 }
  
 void AppStateMain::OnDeactivate() {
-    CLog::Log("AppStateMain::OnDeactivate");
+    Log::L("AppStateMain::OnDeactivate");
     UnloadDocument();
     ClearStateStack();
 };
@@ -128,6 +131,7 @@ void AppStateMain::OnLoop() {
  
 void AppStateMain::OnRender(SDL_Renderer* renderer) {
     RenderDocument();
+    ActorCatalog::GetActor("skull_deco")->OnRender();
 };
 
 void AppStateMain::Update() {

@@ -1,8 +1,9 @@
 #include "SceneLoader.h"
-#include "../Util/CFile.h"
-#include "../Util/CLog.h"
+#include "../Util/File.h"
+#include "../Util/Log.h"
 #include "../Util/CMath.h"
 #include "../Util/PathUtil.h"
+#include "../Engine/StillCatalog.h"
 
 SceneLoader::SceneLoader() {
     m_sceneHeight = 0;
@@ -11,23 +12,23 @@ SceneLoader::SceneLoader() {
 SceneLoader::~SceneLoader() {
 }
 
-CScene* SceneLoader::LoadScene(int act, int level) {
+Scene* SceneLoader::LoadScene(int act, int level) {
     std::string filePath = PathUtil::GetScene(act, level);
-    std::string document = CFile::ReadText(filePath.c_str());
+    std::string document = File::ReadText(filePath.c_str());
     Json::Value root;
     Json::Reader reader;
     bool parsingSuccessful = reader.parse(document.c_str(), root, false);
     if (! parsingSuccessful) {
-        CLog::Log(reader.getFormatedErrorMessages());
+        Log::L(reader.getFormatedErrorMessages());
         return NULL;
     }
     BuildScene(root);
-    CLog::Log("Scene Built.");
+    Log::L("Scene Built.");
     return m_scene;
 }
 
-CScene* SceneLoader::BuildScene(const Json::Value root) {
-    m_scene = new CScene();
+Scene* SceneLoader::BuildScene(const Json::Value root) {
+    m_scene = new Scene();
     m_scene->SetVersion(root.get("version", "0.0").asString());
     m_scene->SetWidth(root.get("width", 3.0f).asDouble());
     m_scene->SetHeight(root.get("height", 3.0f).asDouble());
@@ -40,6 +41,7 @@ CScene* SceneLoader::BuildScene(const Json::Value root) {
         fgLayer->SetDistance(jFgLayer.get("distance",0.0f).asDouble());
         m_scene->AddFgLayer(fgLayer);
     }
+    bool isFirstWorldLayer = true;
     const Json::Value jarrWorldLayers = root["worldLayers"];
     for(int worldLayerIndex = 0; worldLayerIndex < jarrWorldLayers.size(); worldLayerIndex++) {
         const Json::Value jWorldLayer = jarrWorldLayers[worldLayerIndex];
@@ -51,6 +53,12 @@ CScene* SceneLoader::BuildScene(const Json::Value root) {
         const Json::Value jarrAssets = jWorldLayer["assets"];
         BuildAssets(jarrAssets, worldLayer);
         m_scene->AddWorldLayer(worldLayer);
+        if (isFirstWorldLayer) {
+            m_scene->SetWorldLayer(worldLayer);
+            isFirstWorldLayer = false;
+        } else if (jWorldLayer.get("isDefault",false).asBool()) {
+            m_scene->SetWorldLayer(worldLayer);
+        }
     }
     const Json::Value jarrBgLayers = root["bgLayers"];
     for(int bgLayerIndex = 0; bgLayerIndex < jarrBgLayers.size(); bgLayerIndex++) {
@@ -61,23 +69,42 @@ CScene* SceneLoader::BuildScene(const Json::Value root) {
         bgLayer->SetDistance(jBgLayer.get("distance", 0.0f).asDouble());
         m_scene->AddBgLayer(bgLayer);
     }
-    CLog::Log(m_scene->GetVersion());
+    Log::L(m_scene->GetVersion());
     return m_scene;
 }
 
-std::vector<CArea*> SceneLoader::BuildAreas(const Json::Value jarrAreas, Layer* layer) {
-    std::vector<CArea*> areas;
+std::vector<Area*> SceneLoader::BuildAreas(const Json::Value jarrAreas, Layer* layer) {
+    std::vector<Area*> areas;
+    AreaNode* prevNode = NULL;
+    AreaNode* firstNode = NULL;
     for(int index = 0; index < jarrAreas.size(); ++index ) {
+        prevNode = NULL;
+        firstNode = NULL;
         const Json::Value jArea = jarrAreas[index];
-        CArea* area = new CArea(layer);
+        Area* area = new Area(layer);
         area->SetMaterial(jArea.get("material",0).asInt());
         area->SetNature(jArea.get("nature",0).asInt());
         const Json::Value jarrPoints = jArea["points"];
         for(int jindex = 0; jindex < jarrPoints.size(); ++jindex) {
             const Json::Value jPoint = jarrPoints[jindex];
-            area->AddPoint(jPoint.get("x",0.0f).asDouble(),CMath::ToCartesian(jPoint.get("y",0.0f).asDouble(), m_sceneHeight));
+            AreaNode* areaNode = new AreaNode(jPoint.get("x",0.0f).asDouble(),CMath::ToCartesian(jPoint.get("y",0.0f).asDouble(), m_sceneHeight));
+            areaNode->area = area;
+            area->AddPoint(areaNode);
+            if (!firstNode)
+                firstNode = areaNode;
+            if (prevNode) {
+                prevNode->neighborB = areaNode;
+                areaNode->neighborA = prevNode;
+            }
+            prevNode = areaNode;
         }
         area->SetClosed(jArea.get("closed",true).asBool());
+        area->SetCenter(jArea.get("centerX", 0.0f).asDouble(), CMath::ToCartesian(jArea.get("centerY", 0.0f).asDouble(), m_sceneHeight));
+        area->SetLayeredGraphic(BuildLayeredGraphic(jArea, area->GetCenter()));
+        if (area->IsClosed() && prevNode) {
+            prevNode->neighborB = firstNode;
+            firstNode->neighborA = prevNode;
+        }
         area->SetBody();
         areas.push_back(area);
     }
@@ -97,18 +124,20 @@ void SceneLoader::BuildAssets(Json::Value jarrAssets, WorldLayer* worldLayer) {
     }
 };
 
-void SceneLoader::BuildElem(const Json::Value jElem, CElem* elem) {
+void SceneLoader::BuildElem(const Json::Value jElem, Elem* elem) {
     elem->SetWidth(jElem.get("width",0.0f).asDouble());
     elem->SetHeight(jElem.get("height",0.0f).asDouble());
     elem->SetX(jElem.get("x",0.0f).asDouble());
     elem->SetY(jElem.get("y",0.0f).asDouble());
     elem->SetY(CMath::ToCartesian(jElem.get("y",0.0f).asDouble(), m_sceneHeight));
-    elem->SetScale(jElem.get("scale",1.0f).asDouble());
+    elem->SetScale(jElem.get("scaleFactor",1.0f).asDouble());
     elem->SetRotation(jElem.get("rotation",1.0f).asDouble()*M_PI);
+    Log::L("Stack index is %d", jElem.get("stackIndex", 0).asInt());
+    elem->SetStackIndex(jElem.get("stackIndex", 0).asInt());
 };
 
-CUnit* SceneLoader::BuildUnit(const Json::Value jUnit, WorldLayer* worldLayer) {
-    CUnit* unit = new CUnit(worldLayer);
+Unit* SceneLoader::BuildUnit(const Json::Value jUnit, WorldLayer* worldLayer) {
+    Unit* unit = new Unit(worldLayer);
     BuildElem(jUnit, unit);
     unit->SetBody();
     return unit;
@@ -133,4 +162,37 @@ Exit* SceneLoader::BuildExit(const Json::Value jExit, WorldLayer* worldLayer) {
     Exit* exit = new Exit(worldLayer);
     BuildElem(jExit, exit);
     return exit;
+};
+
+LayeredGraphic* SceneLoader::BuildLayeredGraphic(const Json::Value jLGraphic, Vector2* reference) {
+    LayeredGraphic* layeredGraphic = new LayeredGraphic();
+    layeredGraphic->SetReference(reference->x, reference->y);
+    std::vector<Still*> vStills;
+    const Json::Value jarrStills = jLGraphic["stills"];
+    for(int jindex = 0; jindex < jarrStills.size(); ++jindex) {
+        const Json::Value jStill = jarrStills[jindex];
+        Still* still = StillCatalog::GetByName(jStill.get("name","").asString());
+        if (still) {
+            BuildElem(jStill, still);
+            OffsetElem(still, reference);
+            vStills.push_back(still);
+        }
+    }
+    std::sort(vStills.begin(), vStills.end(), SceneLoader::SortIndex);
+    for(auto &_still : vStills) {
+        if (_still->GetStackIndex() < 0)
+            layeredGraphic->AddBack(_still);
+        else
+            layeredGraphic->AddFront(_still);
+    }
+    return layeredGraphic;
+};
+
+void SceneLoader::OffsetElem(Elem* elem, Vector2* reference) {
+    elem->SetX(elem->GetX() - reference->x);
+    elem->SetY(elem->GetY() - reference->y);
+};
+
+bool SceneLoader::SortIndex(Elem* elemA, Elem* elemB) {
+    return (elemA->GetStackIndex() < elemB->GetStackIndex());
 };

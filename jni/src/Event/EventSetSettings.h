@@ -1,5 +1,5 @@
-#ifndef __EVENTPUSHSTATEONCLICK__H__
-    #define __EVENTPUSHSTATEONCLICK_H__
+#ifndef _EVENTSETSETTINGS_H_
+    #define _EVENTSETSETTINGS_H_
  
 #include "Rocket/Core/EventListener.h"
 #include "../AppState.h"

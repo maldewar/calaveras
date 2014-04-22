@@ -13,11 +13,14 @@ class ConfigManager {
         static bool IsMusicEnabled();
         static void SetSoundEnabled(bool soundEnabled);
         static bool IsSoundEnabled();
+        static void SetDebugDrawGraphEnabled(bool debugDrawGraph);
+        static bool IsDebugDrawGraphEnabled();
 
     private:
         static std::string m_locale;
         static bool m_musicEnabled;
         static bool m_soundEnabled;
+        static bool m_debugDrawGraph;
 
 };
 

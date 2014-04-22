@@ -1,5 +1,5 @@
 #include "EventStartOnClick.h"
-#include "Util/CLog.h"
+#include "Util/Log.h"
 
 EventStartOnClick::EventStartOnClick(AppStateMain* appStateMain) {
     m_appState = appStateMain;
@@ -7,5 +7,5 @@ EventStartOnClick::EventStartOnClick(AppStateMain* appStateMain) {
 
 void EventStartOnClick::ProcessEvent(Rocket::Core::Event& event)
 {
-    CLog::Log("Start was pressed.");
+    Log::L("Start was pressed.");
 }

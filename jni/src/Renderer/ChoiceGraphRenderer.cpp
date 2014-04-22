@@ -1,6 +1,8 @@
 #include "ChoiceGraphRenderer.h"
 #include "../Util/CMath.h"
-#include "../Util/CLog.h"
+#include "../Util/RendererUtil.h"
+#include "../Model/AreaNode.h"
+#include "../Util/Log.h"
 
 
 ChoiceGraphRenderer::ChoiceGraphRenderer(){
@@ -8,8 +10,8 @@ ChoiceGraphRenderer::ChoiceGraphRenderer(){
     m_renderer = NULL;
     m_scene_height = 0.0f;
     m_pointRect = new SDL_Rect();
-    m_pointRect->w = 3;
-    m_pointRect->h = 3;
+    m_pointRect->w = 5;
+    m_pointRect->h = 5;
 };
 
 ChoiceGraphRenderer::~ChoiceGraphRenderer() {
@@ -37,81 +39,50 @@ void ChoiceGraphRenderer::Render(Camera* camera) {
 void ChoiceGraphRenderer::Render() {
     CIndexMap index = boost::get(boost::vertex_index, *m_graph);
     vertex_t v, _v;
+    GraphNode* node;
+    GraphNode* neighbourNode;
     std::pair<CVertexIter, CVertexIter> vp;
     CGraph::adjacency_iterator neighbourIt, neighbourEnd;
+    RendererUtil::RememberColor(m_renderer);
     for (vp = boost::vertices(*m_graph); vp.first != vp.second; ++vp.first) {
         v = index[*vp.first];
-        m_pointRect->x = CMath::MToPxInt((*m_graph)[v].x);
-        m_pointRect->y = CMath::MToPxInt(CMath::ToCanvas((*m_graph)[v].y, m_scene_height));
+        node = &(*m_graph)[v];
+        m_pointRect->x = CMath::MToPxInt(node->x) - m_pointRect->w/2;
+        m_pointRect->y = CMath::MToPxInt(CMath::ToCanvas(node->y, m_scene_height)) - m_pointRect->h/2;
+        if (node->terminal) {
+            RendererUtil::SetColor(m_renderer, RendererUtil::Color::ORANGE, 192);
+            if (node->action == ACTION_DESCEND)
+                RendererUtil::SetColor(m_renderer, RendererUtil::Color::RED);
+        } else {
+            RendererUtil::SetColor(m_renderer, RendererUtil::Color::YELLOW, 192);
+        }
         SDL_RenderFillRect(m_renderer, m_pointRect);
+        if (node->anchor) {
+            RendererUtil::SetColor(m_renderer, RendererUtil::Color::GREEN, 92);
+            SDL_RenderDrawLine(m_renderer,
+                CMath::MToPxInt(node->x),
+                CMath::MToPxInt(CMath::ToCanvas(node->y, m_scene_height)),
+                CMath::MToPxInt(node->anchor->x),
+                CMath::MToPxInt(CMath::ToCanvas(node->anchor->y, m_scene_height)));
+            m_pointRect->x = CMath::MToPxInt(node->anchor->x) - m_pointRect->w/2;
+            m_pointRect->y = CMath::MToPxInt(CMath::ToCanvas(node->anchor->y, m_scene_height)) - m_pointRect->h/2;
+            SDL_RenderFillRect(m_renderer, m_pointRect);
+        }
+        RendererUtil::SetColor(m_renderer, RendererUtil::Color::WHITE);
         boost::tie(neighbourIt, neighbourEnd) = boost::adjacent_vertices(v, *m_graph);
         for (; neighbourIt != neighbourEnd; ++neighbourIt){
-            //VertexID vertexID = *vertexIt; // dereference vertexIt, get the ID
-            //Vertex & vertex = graph[vertexID];
             _v = index[*neighbourIt];
+            neighbourNode = &(*m_graph)[_v];
+            if (node->IsIntern())
+                RendererUtil::SetColor(m_renderer, RendererUtil::Color::RED, 92);
+            else
+                RendererUtil::SetColor(m_renderer, RendererUtil::Color::GREEN, 92);
             SDL_RenderDrawLine(m_renderer,
-                CMath::MToPxInt((*m_graph)[v].x),
-                CMath::MToPxInt(CMath::ToCanvas((*m_graph)[v].y, m_scene_height)),
-                CMath::MToPxInt((*m_graph)[_v].x),
-                CMath::MToPxInt(CMath::ToCanvas((*m_graph)[_v].y, m_scene_height)));
+                CMath::MToPxInt(node->x),
+                CMath::MToPxInt(CMath::ToCanvas(node->y, m_scene_height)),
+                CMath::MToPxInt(neighbourNode->x),
+                CMath::MToPxInt(CMath::ToCanvas(neighbourNode->y, m_scene_height)));
         }
     }
-/*
-    float lastX, lastY, startX, startY;
-    if (shape->GetType() ==  b2Shape::e_chain) {
-            b2ChainShape* chain = (b2ChainShape*)shape;
-            lastX = -1;
-            lastY = -1;
-            startX = -1;
-            startY = -1;
-            for (int32 i = 0; i < chain->m_count; ++i)
-            {
-                if (lastX >= 0) { 
-                   SDL_RenderDrawLine(renderer,
-                        CMath::MToPxInt(lastX),
-                        CMath::MToPxInt(CMath::ToCanvas(lastY, m_scene_height)),
-                        CMath::MToPxInt(chain->m_vertices[i].x + body->GetPosition().x),
-                        CMath::MToPxInt(CMath::ToCanvas(chain->m_vertices[i].y + body->GetPosition().y, m_scene_height)));
-                } else {
-                    startX = chain->m_vertices[i].x + body->GetPosition().x;
-                    startY = chain->m_vertices[i].y + body->GetPosition().y;
-                }
-                lastX = chain->m_vertices[i].x + body->GetPosition().x;
-                lastY = chain->m_vertices[i].y + body->GetPosition().y;
-            }
-            if (closed) {
-                SDL_RenderDrawLine(renderer,
-                CMath::MToPxInt(lastX),
-                CMath::MToPxInt(CMath::ToCanvas(lastY, m_scene_height)),
-                CMath::MToPxInt(startX),
-                CMath::MToPxInt(CMath::ToCanvas(startY, m_scene_height)));
-            }
-    } else if (shape->GetType() == b2Shape::e_polygon) {
-            b2PolygonShape* polygon = (b2PolygonShape*)shape;
-            lastX = -1;
-            lastY = -1;
-            startX = -1;
-            startY = -1;
-            for (int32 i = 0; i < polygon->GetVertexCount(); ++i)
-            {
-                if (lastX >= 0) { 
-                   SDL_RenderDrawLine(renderer,
-                        CMath::MToPxInt(lastX),
-                        CMath::MToPxInt(CMath::ToCanvas(lastY, m_scene_height)),
-                        CMath::MToPxInt(polygon->m_vertices[i].x + body->GetPosition().x),
-                        CMath::MToPxInt(CMath::ToCanvas(polygon->m_vertices[i].y + body->GetPosition().y, m_scene_height)));
-                } else {
-                    startX = polygon->m_vertices[i].x + body->GetPosition().x;
-                    startY = polygon->m_vertices[i].y + body->GetPosition().y;
-                }
-                lastX = polygon->m_vertices[i].x + body->GetPosition().x;
-                lastY = polygon->m_vertices[i].y + body->GetPosition().y;
-            }
-            SDL_RenderDrawLine(renderer,
-            CMath::MToPxInt(lastX),
-            CMath::MToPxInt(CMath::ToCanvas(lastY, m_scene_height)),
-            CMath::MToPxInt(startX),
-            CMath::MToPxInt(CMath::ToCanvas(startY, m_scene_height)));
-    }
-*/
+    RendererUtil::ResetColor(m_renderer);
 };

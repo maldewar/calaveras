@@ -3,6 +3,7 @@
 
 #include <string>
 #include "../Model/Vector2.h"
+#include "Log.h"
 /**
  * Constant for degrees to radians convertion.
  */
@@ -15,14 +16,17 @@ const int RADTODEG = 57.295779513082320876f;
 class CMath {
     private:
         CMath();
+        static int relativeCCW(float x1, float y1, float x2, float y2, float px, float py);
 
     private:
         static float m_mToPx;
         static float m_pxToM;
-        static float m_meterWidthFactor;
+        static float m_cameraTargetWidthM;
+        static float m_maxZoomFactor;
+        static int m_mToPxRatio;
 
     public:
-        static void SetFactor(int pixWidth, int pixHeight);
+        static void SetFactor(int screenWidth, int screenHeight);
         static inline float PxToM(float value) {
             return value * m_pxToM;
         };
@@ -47,6 +51,9 @@ class CMath {
         static inline float GetPxToMFactor() {
             return m_pxToM;
         };
+        static inline int GetMToPxRatio() {
+            return m_mToPxRatio;
+        };
         static inline float ToCartesian(float y, float height) {
             return height - y;
         };
@@ -68,8 +75,15 @@ class CMath {
         static Vector2* GetPointAt(float x, float y, float distance, float angle);
         static Vector2* GetPointAt(Vector2* base, float distance, float angle);
         static float Random(float a, float b);
-        static inline float GetAbsoluteAngle(float x1, float y1, float x2, float y2) {
-            return atan2(fabs(y2-y1), fabs(x2-x1));
+        static inline float GetAbsoluteAngle(float angle) {
+            if (angle >= 0 && angle <= M_PI_2)
+                return angle;
+            else if (angle > 0)
+                return fabs(angle - M_PI);
+            else if (angle < 0 && angle >= -M_PI_2)
+                return fabs(angle);
+            else
+                return angle + M_PI;
         };
         static inline float GetAngle(float x1, float y1, float x2, float y2) {
             return atan2(y2 - y1, x2 - x1);
@@ -80,11 +94,15 @@ class CMath {
             float dAB = GetDistance(xA, yA, xB, yB);
             return acos((pow(dVA, 2) + pow(dVB, 2) - pow(dAB, 2))/(2 * dVA * dVB));
         };
-        static inline float GetAngleOffset(float base, float offset) {
-            float angle = fmod(base + offset, M_PI * 2);
-            if (angle > M_PI)
-                angle -= 2 * M_PI;
-            return angle;
+        /**
+         * Returns the results of a sum of angles normalized between -PI and PI radians.
+         * @param base Base angle.
+         * @param offset Offset angle.
+         * @return Resulting angle.
+         */
+        static float GetAngleOffset(float base, float offset);
+        static inline float GetAngleDistance(float angleA, float angleB) {
+            return fabs(angleA - angleB);
         };
         static inline float GetAbsoluteDiff(float val1, float val2) {
             return fabs(val2 - val1);
@@ -98,6 +116,7 @@ class CMath {
             else
                 return M_PI - angle;
         };
+        static bool LinesIntersect(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4);
         
 };
 #endif

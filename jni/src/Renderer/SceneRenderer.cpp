@@ -1,18 +1,24 @@
 #include "SceneRenderer.h"
 #include "../Engine/BgCatalog.h"
 #include "../Util/CMath.h"
-#include "../Util/CLog.h"
+#include "../Util/RendererUtil.h"
+#include "../Util/Log.h"
 #include "../AppStateManager.h"
+#include "../Manager/ConfigManager.h"
 
 
 SceneRenderer::SceneRenderer(){
     m_scene = NULL;
     m_renderer = NULL;
     m_scene_height = 0.0f;
+    m_pointRect = new SDL_Rect();
+    m_pointRect->w = 4;
+    m_pointRect->h = 4;
 };
 
-void SceneRenderer::Activate(CScene* scene, SDL_Renderer* renderer) {
+void SceneRenderer::Activate(Scene* scene, SceneExt* sceneExt, SDL_Renderer* renderer) {
     m_scene = scene;
+    m_sceneExt = sceneExt;
     m_renderer = renderer;
     m_scene_height = m_scene->GetHeight();
     for (auto &bgLayer : m_scene->GetBgLayers()) {
@@ -48,7 +54,7 @@ void SceneRenderer::Render(Camera* camera) {
     for (auto &worldLayer : m_scene->GetWorldLayers()) {
         SDL_RenderSetScale(m_renderer, zoom, zoom);
         SDL_RenderSetViewport(m_renderer, &viewport);
-        //CLog::Log("Viewport x:%d y:%d w:%d h:%d", viewport.x, viewport.y, viewport.w, viewport.h);
+        //Log::L("Viewport x:%d y:%d w:%d h:%d", viewport.x, viewport.y, viewport.w, viewport.h);
         //SDL_RenderSetScale(m_renderer, zoom, zoom);
         RenderWorldLayer(worldLayer, m_renderer);
         //SDL_RenderSetScale(m_renderer, 1.0f, 1.0f);
@@ -63,11 +69,16 @@ void SceneRenderer::Render(Camera* camera) {
         SDL_RenderSetScale(m_renderer, camera->GetZoom(), camera->GetZoom());
         SDL_RenderSetViewport(m_renderer, camera->GetViewport());
         RenderWorldLayer(worldLayer, m_renderer);
+        if (m_sceneExt) {
+            RenderSceneExt();
+        }
         SDL_RenderSetScale(m_renderer, 1, 1);
         SDL_RenderSetViewport(m_renderer, NULL);
     }
-    for (auto &choiceGraphRenderer : m_choiceGraphRenderers) {
-        choiceGraphRenderer->Render(camera);
+    if (ConfigManager::IsDebugDrawGraphEnabled()) {
+        for (auto &choiceGraphRenderer : m_choiceGraphRenderers) {
+            choiceGraphRenderer->Render(camera);
+        }
     }
 };
 
@@ -91,7 +102,7 @@ void SceneRenderer::RenderBgLayer(BgLayer* bgLayer, SDL_Renderer* renderer) {
     m_bgRenderers[bgLayer->GetId()]->Render();
 };
 
-void SceneRenderer::RenderArea(CArea* area, SDL_Renderer* renderer) {
+void SceneRenderer::RenderArea(Area* area, SDL_Renderer* renderer) {
     if (area->GetBody()) {
         for (b2Fixture* f = area->GetBody()->GetFixtureList(); f; f = f->GetNext()) {
             RenderShape(f->GetShape(), area->GetBody(),renderer, area->IsClosed());
@@ -99,11 +110,12 @@ void SceneRenderer::RenderArea(CArea* area, SDL_Renderer* renderer) {
     }
 }
 
-void SceneRenderer::RenderUnit(CUnit* unit, SDL_Renderer* renderer) {
+void SceneRenderer::RenderUnit(Unit* unit, SDL_Renderer* renderer) {
     if (unit->GetBody()) {
         RenderAnimation(unit->GetBody()->GetPosition().x,
             CMath::ToCanvas(unit->GetBody()->GetPosition().y, m_scene_height),
             unit->GetBody()->GetAngle(),
+            unit->IsLeftOriented(),
             unit->GetAnimation(), 
             renderer);
         /*for (b2Fixture* f = unit->GetBody()->GetFixtureList(); f; f = f->GetNext()) {
@@ -113,7 +125,7 @@ void SceneRenderer::RenderUnit(CUnit* unit, SDL_Renderer* renderer) {
 };
 
 void SceneRenderer::RenderEntry(Entry* entry, SDL_Renderer* renderer) {
-    //CLog::Log("Entry y:%f", CMath::ToCanvas(entry->GetY(), m_scene_height));
+    //Log::L("Entry y:%f", CMath::ToCanvas(entry->GetY(), m_scene_height));
     RenderAnimation(entry->GetX(),
         CMath::ToCanvas(entry->GetY(), m_scene_height),
         entry->GetRotation(),
@@ -122,8 +134,8 @@ void SceneRenderer::RenderEntry(Entry* entry, SDL_Renderer* renderer) {
 };
 
 void SceneRenderer::RenderExit(Exit* exit, SDL_Renderer* renderer) {
-    //CLog::Log("Exit y:%f", CMath::ToCanvas(exit->GetY(), m_scene_height));
-    //CLog::Log("Exit y:%f", exit->GetY());
+    //Log::L("Exit y:%f", CMath::ToCanvas(exit->GetY(), m_scene_height));
+    //Log::L("Exit y:%f", exit->GetY());
     RenderAnimation(exit->GetX(),
         CMath::ToCanvas(exit->GetY(), m_scene_height),
         exit->GetRotation(),
@@ -131,7 +143,11 @@ void SceneRenderer::RenderExit(Exit* exit, SDL_Renderer* renderer) {
         renderer);
 };
 
-void SceneRenderer::RenderAnimation(float centerX, float centerY, float rotationRad, CAnimation* animation, SDL_Renderer* renderer) {
+void SceneRenderer::RenderAnimation(float centerX, float centerY, float rotationRad, Animation* animation, SDL_Renderer* renderer) {
+    RenderAnimation(centerX, centerY, rotationRad, false, animation, renderer);
+};
+
+void SceneRenderer::RenderAnimation(float centerX, float centerY, float rotationRad, bool flipHorizontal, Animation* animation, SDL_Renderer* renderer) {
     if (animation->GetTexture()) {
         SDL_Rect* dest = animation->GetDstRect(CMath::MToPxInt(centerX), CMath::MToPxInt(centerY));
         SDL_RenderCopyEx(renderer,
@@ -140,14 +156,16 @@ void SceneRenderer::RenderAnimation(float centerX, float centerY, float rotation
             dest,
             CMath::ToDeg(rotationRad) * -1,
             NULL,
-            SDL_FLIP_NONE);
+            flipHorizontal?SDL_FLIP_HORIZONTAL:SDL_FLIP_NONE);
         //SDL_Rect* viewport = animation->GetDstRect(CMath::MToPxInt(centerX), CMath::MToPxInt(centerY));
-        //CLog::Log("Viewport x:%d y:%d w:%d h:%d", viewport->x, viewport->y, viewport->w, viewport->h);
+        //Log::L("Viewport x:%d y:%d w:%d h:%d", viewport->x, viewport->y, viewport->w, viewport->h);
     }
 };
 
 void SceneRenderer::RenderShape(b2Shape* shape, b2Body* body, SDL_Renderer* renderer, bool closed) {
     float lastX, lastY, startX, startY;
+    RendererUtil::RememberColor(m_renderer);
+    RendererUtil::SetColor(m_renderer, RendererUtil::Color::GRAY80);
     if (shape->GetType() ==  b2Shape::e_chain) {
             b2ChainShape* chain = (b2ChainShape*)shape;
             lastX = -1;
@@ -202,5 +220,34 @@ void SceneRenderer::RenderShape(b2Shape* shape, b2Body* body, SDL_Renderer* rend
             CMath::MToPxInt(CMath::ToCanvas(lastY, m_scene_height)),
             CMath::MToPxInt(startX),
             CMath::MToPxInt(CMath::ToCanvas(startY, m_scene_height)));
+    }
+    RendererUtil::ResetColor(m_renderer);
+};
+
+void SceneRenderer::RenderSceneExt() {
+    if (m_sceneExt->IsSelecting()) {
+        RendererUtil::RememberColor(m_renderer);
+        RendererUtil::SetColor(m_renderer, RendererUtil::Color::WHITE, 192);
+        SDL_RenderDrawLine(m_renderer,
+            CMath::MToPxInt(m_sceneExt->GetSelectZenithX()),
+            CMath::MToPxInt(CMath::ToCanvas(m_sceneExt->GetSelectZenithY(), m_scene_height)),
+            CMath::MToPxInt(m_sceneExt->GetSelectNadirX()),
+            CMath::MToPxInt(CMath::ToCanvas(m_sceneExt->GetSelectNadirY(), m_scene_height)));
+        RendererUtil::SetColor(m_renderer, RendererUtil::Color::YELLOW, 192);
+        m_pointRect->x = CMath::MToPxInt(m_sceneExt->GetSelectZenithX());
+        m_pointRect->y = CMath::MToPxInt(CMath::ToCanvas(m_sceneExt->GetSelectZenithY(), m_scene_height));
+        SDL_RenderFillRect(m_renderer, m_pointRect);
+        m_pointRect->x = CMath::MToPxInt(m_sceneExt->GetSelectNadirX());
+        m_pointRect->y = CMath::MToPxInt(CMath::ToCanvas(m_sceneExt->GetSelectNadirY(), m_scene_height));
+        SDL_RenderFillRect(m_renderer, m_pointRect);
+        if (m_sceneExt->GetObjectType() == AREA_BODY) {
+            RendererUtil::SetColor(m_renderer, RendererUtil::Color::WHITE);
+            SDL_RenderDrawLine(m_renderer,
+            CMath::MToPxInt(m_sceneExt->GetNodeA()->x),
+            CMath::MToPxInt(CMath::ToCanvas(m_sceneExt->GetNodeA()->y, m_scene_height)),
+            CMath::MToPxInt(m_sceneExt->GetNodeB()->x),
+            CMath::MToPxInt(CMath::ToCanvas(m_sceneExt->GetNodeB()->y, m_scene_height)));
+        }
+        RendererUtil::ResetColor(m_renderer);
     }
 };

@@ -1,8 +1,8 @@
 #include "AreaCatalog.h"
-#include "../Util/CFile.h"
+#include "../Util/File.h"
 #include "../Util/PathUtil.h"
 //#include "../Util/TextureUtil.h"
-//#include "../Util/CLog.h"
+//#include "../Util/Log.h"
 
 std::unordered_map<int, AreaDef> AreaCatalog::m_areaDef;
 std::string AreaCatalog::m_filename = PathUtil::GetAreaCatalog();
@@ -10,7 +10,7 @@ SDL_Renderer* AreaCatalog::m_renderer;
 
 void AreaCatalog::Init(SDL_Renderer* renderer) {
     m_renderer = renderer;
-    std::string document = CFile::ReadText(m_filename.c_str());
+    std::string document = File::ReadText(m_filename.c_str());
     Json::Value root;
     Json::Reader reader;
     bool parsingSuccessful = reader.parse(document.c_str(), root, false);
@@ -21,7 +21,7 @@ void AreaCatalog::Init(SDL_Renderer* renderer) {
 }
 
 void AreaCatalog::BuildCatalog(Json::Value root) {
-    const Json::Value jarrCatalog = root["catalog"];
+    const Json::Value jarrCatalog = root["areaCatalog"];
     for(int catalogIndex = 0; catalogIndex < jarrCatalog.size(); catalogIndex++) {
         const Json::Value jAreaDef = jarrCatalog[catalogIndex];
         AreaDef areaDef;
@@ -41,7 +41,7 @@ void AreaCatalog::BuildCatalog(Json::Value root) {
 void AreaCatalog::Flush() {
 }
 
-void AreaCatalog::Set(CArea* area) {
+void AreaCatalog::Set(Area* area) {
     if (m_areaDef.count(area->GetNature()) == 0)
         return;
     AreaDef areaDef = m_areaDef[area->GetNature()];

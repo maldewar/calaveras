@@ -1,6 +1,6 @@
 #include "TextureUtil.h"
 #include "SurfaceUtil.h"
-#include "CLog.h"
+#include "Log.h"
 
 std::unordered_map<std::string, SDL_Texture*> TextureUtil::m_textures;
 

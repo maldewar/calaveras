@@ -1,11 +1,11 @@
 #include "Exit.h"
-#include "CUnit.h"
+#include "Unit.h"
 #include "WorldLayer.h"
-#include "../Manager/CBoxMaker.h"
+#include "../Manager/BoxMaker.h"
 #include "../Engine/AnimationCatalog.h"
-#include "../Util/CLog.h"
+#include "../Util/Log.h"
 
-Exit::Exit() : CElem() {
+Exit::Exit() : LayeredElem() {
     m_type = ELEM_TYPE_EXIT;
     m_state = EXIT_STATE_OPEN;
     m_units = 0;
@@ -31,7 +31,7 @@ void Exit::SetAnimation() {
     }
 }
 
-CAnimation* Exit::GetAnimation() {
+Animation* Exit::GetAnimation() {
     return m_animation;
 }
 
@@ -108,7 +108,7 @@ void Exit::OnLoop() {
         if (m_units > 0) {
             if (m_timerRef + m_interval < SDL_GetTicks()) {
                 m_timerRef = SDL_GetTicks();
-                CUnit* unit = new CUnit(this->GetLayer());
+                Unit* unit = new Unit(this->GetLayer());
                 unit->SetX(this->GetX());
                 unit->SetY(this->GetY());
                 unit->SetBody();

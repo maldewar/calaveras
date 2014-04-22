@@ -1,43 +1,47 @@
 #include "WorldContactListener.h"
-#include "../Manager/CBoxMaker.h"
-#include "../Util/CLog.h"
+#include "../Manager/BoxMaker.h"
+#include "../Engine/UserData.h"
+#include "../Engine/AreaUserData.h"
+#include "../Util/Log.h"
+
+UserData* WorldContactListener::m_userData = NULL;
 
 WorldContactListener::WorldContactListener() : b2ContactListener() {
 }
 
 void WorldContactListener::BeginContact(b2Contact* contact) {
-    void* fixtureUserData = contact->GetFixtureA()->GetUserData();
-    if ( (int)fixtureUserData >= UNIT_SENSOR_BODY && (int)fixtureUserData < UNIT_SENSOR_BODY + 100 ) {
-        CUnit* unit = (CUnit*)contact->GetFixtureA()->GetBody()->GetUserData();
-        UnitSwitch(unit, (int)fixtureUserData, true, true, contact);
+    m_userData = static_cast<UserData*>( contact->GetFixtureA()->GetUserData() );
+    if ( m_userData->type >= UNIT_BODY && m_userData->type < UNIT_BODY + 100 ) {
+        Unit* unit = (Unit*)contact->GetFixtureA()->GetBody()->GetUserData();
+        UnitSwitch(unit, m_userData->type, true, true, contact);
         return;
     }
 
-    fixtureUserData = contact->GetFixtureB()->GetUserData();
-    if ( (int)fixtureUserData >= UNIT_SENSOR_BODY && (int)fixtureUserData < UNIT_SENSOR_BODY + 100 ) {
-        CUnit* unit = (CUnit*)contact->GetFixtureB()->GetBody()->GetUserData();
-        UnitSwitch(unit, (int)fixtureUserData, false, true, contact);
+    m_userData = static_cast<UserData*>( contact->GetFixtureB()->GetUserData() );
+    if ( m_userData->type >= UNIT_BODY && m_userData->type < UNIT_BODY + 100 ) {
+        Unit* unit = (Unit*)contact->GetFixtureB()->GetBody()->GetUserData();
+        UnitSwitch(unit, m_userData->type, false, true, contact);
         return;
     }
 }
 
 void WorldContactListener::EndContact(b2Contact* contact) {
     void* fixtureUserData = contact->GetFixtureA()->GetUserData();
-    if ( (int)fixtureUserData >= UNIT_SENSOR_BODY && (int)fixtureUserData < UNIT_SENSOR_BODY + 100 ) {
-        CUnit* unit = (CUnit*)contact->GetFixtureA()->GetBody()->GetUserData();
+    m_userData = static_cast<UserData*>( contact->GetFixtureA()->GetUserData() );
+    if ( m_userData->type >= UNIT_BODY && m_userData->type < UNIT_BODY + 100 ) {
+        Unit* unit = (Unit*)contact->GetFixtureA()->GetBody()->GetUserData();
         UnitSwitch(unit, (int)fixtureUserData, true, false, contact);
         return;
     }
-
-    fixtureUserData = contact->GetFixtureB()->GetUserData();
-    if ( (int)fixtureUserData >= UNIT_SENSOR_BODY && (int)fixtureUserData < UNIT_SENSOR_BODY + 100 ) {
-        CUnit* unit = (CUnit*)contact->GetFixtureB()->GetBody()->GetUserData();
+    m_userData = static_cast<UserData*>( contact->GetFixtureB()->GetUserData() );
+    if ( m_userData->type >= UNIT_BODY && m_userData->type < UNIT_BODY + 100 ) {
+        Unit* unit = (Unit*)contact->GetFixtureB()->GetBody()->GetUserData();
         UnitSwitch(unit, (int)fixtureUserData, false, false, contact);
         return;
     }
 }
 
-void WorldContactListener::UnitSwitch(CUnit* unit, int sensorUnit, bool isFixA, bool isBegin, b2Contact* contact) {
+void WorldContactListener::UnitSwitch(Unit* unit, int sensorUnit, bool isFixA, bool isBegin, b2Contact* contact) {
     void* fixtureUserData;
     int otherSensor;
     b2Fixture* otherFixture;
@@ -46,31 +50,20 @@ void WorldContactListener::UnitSwitch(CUnit* unit, int sensorUnit, bool isFixA, 
     else
         otherFixture = contact->GetFixtureA();
     fixtureUserData = otherFixture->GetUserData();
-    otherSensor = (int)fixtureUserData;
-    if ( otherSensor >= AREA_SENSOR_BODY && otherSensor < AREA_SENSOR_BODY + 100 ) {
-        CArea* area = (CArea*)otherFixture->GetBody()->GetUserData();
+    otherSensor = ((UserData*)fixtureUserData)->type;
+    if ( otherSensor >= AREA_BODY && otherSensor < AREA_BODY + 100 ) {
+        Area* area = (Area*)otherFixture->GetBody()->GetUserData();
         if (isBegin)
             BeginContact(unit, area, sensorUnit, otherSensor, 0);
         else
             EndContact(unit, area, sensorUnit, otherSensor);
-        /*
-        //GET EDGE ANGLE AT CONTACT
-        int edgeIndex;
-        b2EdgeShape edgeShape;
-        if(isFixA)
-            edgeIndex = contact->GetChildIndexB();
-        else
-            edgeIndex = contact->GetChildIndexA();
-        ((b2ChainShape*)otherFixture->GetShape())->GetChildEdge(&edgeShape, edgeIndex);
-        BeginContact(unit, area, sensorUnit, otherSensor, CMath::GetAbsoluteAngle(edgeShape.m_vertex1.x, edgeShape.m_vertex1.y, edgeShape.m_vertex2.x, edgeShape.m_vertex2.y));
-        */
     }
 }
 
-void WorldContactListener::BeginContact(CUnit* unit, CArea* area, int sensorUnit, int sensorArea, float edgeAngle) {
+void WorldContactListener::BeginContact(Unit* unit, Area* area, int sensorUnit, int sensorArea, float edgeAngle) {
     unit->BeginContact(sensorUnit, area, sensorArea);
 }
 
-void WorldContactListener::EndContact(CUnit* unit, CArea* area, int sensorUnit, int sensorArea) {
+void WorldContactListener::EndContact(Unit* unit, Area* area, int sensorUnit, int sensorArea) {
     unit->EndContact(sensorUnit, area, sensorArea);
 }

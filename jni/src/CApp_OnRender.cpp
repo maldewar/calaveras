@@ -1,6 +1,6 @@
 #include "CApp.h"
 #include "Util/TextureUtil.h"
-#include "Util/CText.h"
+#include "Util/Text.h"
 
 void CApp::OnRender(SDL_Renderer* Renderer) {
     SDL_SetRenderDrawColor(Renderer, 0x00, 0x00, 0x00, 0xFF);
@@ -22,8 +22,8 @@ void CApp::OnRender(SDL_Renderer* Renderer) {
     if (FPSManager::Limit() == true) {
         char fpsText[32];
         sprintf(fpsText,"FPS: %i, Ticks: %i",FPSManager::GetFPS(), SDL_GetTicks());
-        m_text = CText::GetTextureSolid(fpsText, "font/SourceSansPro-Regular.ttf", {255,255,0,255}, 22, Renderer);
-        //std::string fileContent = CFile::ReadText("test.json");
-        //m_text = CText::GetTextureSolid(fileContent.c_str(), "font/SourceSansPro-Regular.ttf", {255,255,0,255}, 22, Renderer);
+        m_text = Text::GetTextureSolid(fpsText, "font/SourceSansPro-Regular.ttf", {255,255,0,255}, 22, Renderer);
+        //std::string fileContent = File::ReadText("test.json");
+        //m_text = Text::GetTextureSolid(fileContent.c_str(), "font/SourceSansPro-Regular.ttf", {255,255,0,255}, 22, Renderer);
     }
 }

@@ -1,5 +1,5 @@
 #include "EventPopStateOnClick.h"
-#include "Util/CLog.h"
+#include "Util/Log.h"
 
 EventPopStateOnClick::EventPopStateOnClick(AppState* appState, bool callUpdate) {
     m_appState = appState;

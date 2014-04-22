@@ -1,8 +1,11 @@
 #include "CApp.h"
 #include "Util/TextureUtil.h"
-#include "Util/CText.h"
+#include "Util/Text.h"
 #include "Manager/ConfigManager.h"
+#include "Manager/TextureManager.h"
+#include "Engine/ActorCatalog.h"
 #include "Engine/AnimationCatalog.h"
+#include "Engine/StillCatalog.h"
 #include "Engine/AreaCatalog.h"
 #include "Engine/BgCatalog.h"
 #include "Engine/I18NCatalog.h"
@@ -21,12 +24,16 @@ bool CApp::OnInit() {
     SDL_GetWindowSize(m_window, &w, &h);
     AppStateManager::SetWindowWidth(w);
     AppStateManager::SetWindowHeight(h);
+    AppStateManager::SetWindow(m_window);
     CMath::SetFactor(w, h);
     if((m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)) == NULL ) {
         return false;
     }
     ConfigManager::Init();
+    TextureManager::Init(m_renderer);
+    ActorCatalog::Init();
     AnimationCatalog::Init(m_renderer);
+    StillCatalog::Init(m_renderer);
     AreaCatalog::Init(m_renderer);
     BgCatalog::Init(m_renderer);
     I18NCatalog::AddFile("ui","ui.json");
@@ -36,7 +43,7 @@ bool CApp::OnInit() {
         return false;
     }
     FPSManager::Init();
-    m_text = CText::GetTextureSolid("Leela", "font/SourceSansPro-Regular.ttf", {255,255,0,255}, 22, m_renderer);
+    m_text = Text::GetTextureSolid("Leela", "font/SourceSansPro-Regular.ttf", {255,255,0,255}, 22, m_renderer);
     AppStateManager::SetRenderer(m_renderer);
     AppStateManager::SetActiveAppState(APPSTATE_INTRO);
     return true;

@@ -1,9 +1,10 @@
 #include "ConfigManager.h"
-#include "../Util/CLog.h"
+#include "../Util/Log.h"
 
 std::string ConfigManager::m_locale = "en_US";
 bool ConfigManager::m_musicEnabled = true;
 bool ConfigManager::m_soundEnabled = true;
+bool ConfigManager::m_debugDrawGraph = false;
 
 void ConfigManager::Init() {
 };
@@ -44,4 +45,12 @@ void ConfigManager::SetSoundEnabled(bool soundEnabled) {
 
 bool ConfigManager::IsSoundEnabled() {
     return m_soundEnabled;
+};
+
+void ConfigManager::SetDebugDrawGraphEnabled(bool debugDrawGraph) {
+    m_debugDrawGraph = debugDrawGraph;
+};
+
+bool ConfigManager::IsDebugDrawGraphEnabled() {
+    return m_debugDrawGraph;
 };

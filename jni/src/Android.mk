@@ -19,47 +19,64 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/$(SDL_PATH)/include \
                     $(LOCAL_PATH)/$(LIBROCKET_PATH)/Include
 
 # Add your application source files here...
-LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.cpp \
-    Util/CFile.cpp \
-    Util/CLog.cpp \
+LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.c \
+    Util/File.cpp \
+    Util/Log.cpp \
     Util/CMath.cpp \
     Util/TextureUtil.cpp \
-    Util/CText.cpp \
+    Util/Text.cpp \
     Util/SurfaceUtil.cpp \
     Util/RocketUtil.cpp \
     Util/PathUtil.cpp \
+    Util/RendererUtil.cpp \
     Common/FPSManager.cpp \
-    Engine/CAnimation.cpp \
+    Model/Node.cpp \
+    Model/Node2D.cpp \
+    Model/Elem.cpp \
+    Model/SpriteNode.cpp \
+    Model/Vector2.cpp \
+    Engine/ActorCatalog.cpp \
+    Engine/Sprite.cpp \
+    Engine/Animation.cpp \
     Engine/AnimationCatalog.cpp \
+    Engine/Still.cpp \
+    Engine/StillCatalog.cpp \
+    Engine/LayeredGraphic.cpp \
     Engine/AreaCatalog.cpp \
     Engine/BgCatalog.cpp \
     Engine/I18NCatalog.cpp \
-    Engine/CSprite.cpp \
     Engine/Camera.cpp \
     Engine/WorldContactListener.cpp \
+    Engine/RayCastTool.cpp \
     Engine/RocketGlue.cpp \
     Engine/Gradient.cpp \
-    Model/CScene.cpp \
+    Engine/UserData.cpp \
+    Engine/AreaUserData.cpp \
+    Model/Scene.cpp \
+    Model/SceneExt.cpp \
     Model/ChoiceGraph.cpp \
-    Model/Vector2.cpp \
-    Model/Node.cpp \
+    Model/GraphNode.cpp \
     Model/Layer.cpp \
     Model/FgLayer.cpp \
     Model/WorldLayer.cpp \
     Model/BgLayer.cpp \
-    Model/CArea.cpp \
-    Model/CElem.cpp \
-    Model/CUnit.cpp \
+    Model/Area.cpp \
+    Model/AreaNode.cpp \
+    Model/LayeredElem.cpp \
+    Model/Unit.cpp \
+    Model/Plan.cpp \
     Model/Entry.cpp \
     Model/Exit.cpp \
     Manager/ConfigManager.cpp \
+    Manager/TextureManager.cpp \
     Manager/SceneLoader.cpp \
-    Manager/CBoxMaker.cpp \
+    Manager/BoxMaker.cpp \
     Renderer/SceneRenderer.cpp \
     Renderer/CompositeRenderer.cpp \
+    Renderer/LayeredGraphicRenderer.cpp \
     Renderer/ChoiceGraphRenderer.cpp \
-    CEvent.cpp \
-    CFPS.cpp \
+    Event.cpp \
+    FPS.cpp \
     AppState.cpp \
     AppStateManager.cpp \
     AppStateIntro.cpp \
@@ -68,15 +85,13 @@ LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.cpp \
     AppStateCinematic.cpp \
     Event/EventStartOnClick.cpp \
     Event/EventSlotOnClick.cpp \
-    Event/EventMusicOnClick.cpp \
-    Event/EventSoundOnClick.cpp \
     Event/EventPushStateOnClick.cpp \
     Event/EventPopStateOnClick.cpp \
     Event/EventChangeAppState.cpp \
     Event/EventChangeAppStateToGame.cpp \
     Event/EventChangeAppStateToCinematic.cpp \
-    Event/EventPauseGame.cpp \
     Event/EventSetSettings.cpp \
+    Event/EventGameTools.cpp \
     CApp_OnInit.cpp \
     CApp_OnEvent.cpp \
     CApp_OnLoop.cpp \

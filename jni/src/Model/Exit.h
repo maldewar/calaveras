@@ -2,8 +2,8 @@
     #define _EXIT_H_
 
 #include <Box2D.h>
-#include "CElem.h"
-#include "../Engine/CAnimation.h"
+#include "LayeredElem.h"
+#include "../Engine/Animation.h"
 
 const int EXIT_STATE_CLOSED  = 0;
 const int EXIT_STATE_OPEN    = 1;
@@ -14,10 +14,10 @@ const int EXIT_STATE_OPENING = 3;
  * Models an Exit to the scene.
  * This element takes Unit instances in to score them to the scene.
  */
-class Exit : public CElem
+class Exit : public LayeredElem
 {
     private:
-        CAnimation* m_animation;
+        Animation* m_animation;
         int m_units;
         int m_capacity;
         bool m_open;
@@ -50,7 +50,7 @@ class Exit : public CElem
          * Gets the Animation instance for this Exit's actual state.
          * @returns Animation instance for this Exit's actual state.
          */
-        CAnimation* GetAnimation();
+        Animation* GetAnimation();
         /**
          * Defines how many Unit instances this Exit can take.
          * @param capacity Amount of Unit instances to take.

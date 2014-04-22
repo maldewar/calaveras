@@ -1,6 +1,6 @@
 #include "I18NCatalog.h"
-#include "../Util/CFile.h"
-#include "../Util/CLog.h"
+#include "../Util/File.h"
+#include "../Util/Log.h"
 #include "../Util/PathUtil.h"
 
 I18NCatalog::Locale I18NCatalog::m_locale = en_US;
@@ -12,12 +12,12 @@ void I18NCatalog::SetLocale(Locale locale) {
 };
 
 void I18NCatalog::SetLocale(std::string locale) {
-    CLog::Log("Setting locale in i18n to: %s", locale.c_str());
+    Log::L("Setting locale in i18n to: %s", locale.c_str());
     if (locale.compare("en_US") == 0)
         m_locale = en_US;
     else if (locale.compare("es_MX") == 0) {
         m_locale = es_MX;
-        CLog::Log("Locale set to enum: %s", GetLocaleString(m_locale).c_str());
+        Log::L("Locale set to enum: %s", GetLocaleString(m_locale).c_str());
     } else if (locale.compare("fr_FR") == 0)
         m_locale = fr_FR;
     else if (locale.compare("de_DE") == 0)
@@ -35,18 +35,18 @@ void I18NCatalog::RemoveFile(std::string id) {
 };
 
 void I18NCatalog::Init() {
-    CLog::Log("Calling to init i18n with locale: %s.", GetLocaleString(m_locale).c_str());
+    Log::L("Calling to init i18n with locale: %s.", GetLocaleString(m_locale).c_str());
     m_i18nMap.clear();
     std::map<std::string, std::string>::iterator it;
     for(it = m_i18nFiles.begin();it != m_i18nFiles.end(); it++) {
         std::string filename = PathUtil::GetI18NFile(GetLocaleString(m_locale),
                                 it->second.c_str());
-        std::string document = CFile::ReadText(filename);
+        std::string document = File::ReadText(filename);
         Json::Value root;
         Json::Reader reader;
         bool parsingSuccessful = reader.parse(document.c_str(), root, false);
         if (! parsingSuccessful) {
-            CLog::Log(reader.getFormatedErrorMessages());
+            Log::L(reader.getFormatedErrorMessages());
         } else {
             AddCatalog(root);
         }

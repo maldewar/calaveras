@@ -4,14 +4,14 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
-#include "CEvent.h"
-#include "CFPS.h"
+#include "Event.h"
+#include "FPS.h"
 #include "AppStateManager.h"
 #include "Common/FPSManager.h"
-#include "Util/CFile.h"
+#include "Util/File.h"
 #include "Util/CMath.h"
  
-class CApp : public CEvent {
+class CApp : public Event {
     private:
         bool m_running;
         SDL_Window* m_window;

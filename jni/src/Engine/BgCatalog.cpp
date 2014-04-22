@@ -1,6 +1,6 @@
 #include "BgCatalog.h"
-#include "../Util/CFile.h"
-#include "../Util/CLog.h"
+#include "../Util/File.h"
+#include "../Util/Log.h"
 #include "../Util/PathUtil.h"
 
 std::unordered_map<int, BgDef> BgCatalog::m_bgDef;
@@ -9,19 +9,19 @@ SDL_Renderer* BgCatalog::m_renderer;
 
 void BgCatalog::Init(SDL_Renderer* renderer) {
     m_renderer = renderer;
-    std::string document = CFile::ReadText(m_filename.c_str());
+    std::string document = File::ReadText(m_filename.c_str());
     Json::Value root;
     Json::Reader reader;
     bool parsingSuccessful = reader.parse(document.c_str(), root, false);
     if (! parsingSuccessful) {
-        CLog::Log(reader.getFormatedErrorMessages());
+        Log::L(reader.getFormatedErrorMessages());
         return;
     }
     BuildCatalog(root);
 }
 
 void BgCatalog::BuildCatalog(Json::Value root) {
-    const Json::Value jarrCatalog = root["catalog"];
+    const Json::Value jarrCatalog = root["bgCatalog"];
     for(int catalogIndex = 0; catalogIndex < jarrCatalog.size(); catalogIndex++) {
         const Json::Value jBgDef = jarrCatalog[catalogIndex];
         BgDef bgDef;
@@ -68,7 +68,7 @@ void BgCatalog::BuildCatalog(Json::Value root) {
         }
 
         m_bgDef[jBgDef.get("id", 0).asInt()] = bgDef;
-        CLog::Log("Adding bg with id=%d to the catalog.", jBgDef.get("id", 0).asInt());
+        Log::L("Adding bg with id=%d to the catalog.", jBgDef.get("id", 0).asInt());
     }
 }
 

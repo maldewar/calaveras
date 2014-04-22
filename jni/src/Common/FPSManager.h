@@ -1,5 +1,5 @@
-#ifndef _CFPSMANAGER_H_
-    #define _CFPSMANAGER_H_
+#ifndef _FPSMANAGER_H_
+    #define _FPSMANAGER_H_
 
 #include <SDL.h>
 #include <stdint.h>

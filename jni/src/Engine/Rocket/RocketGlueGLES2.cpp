@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2010-2012, Gabriel Jacobo
+ * All rights reserved.
+ * Permission to use this file is granted under the conditions of the Ignifuga Game Engine License
+ * whose terms are available in the LICENSE file or at http://www.ignifuga.org/license
+ *
+ */
+
 #include "RocketGlueGLES2.h"
 
 #if defined(ANDROID)
@@ -66,10 +74,10 @@ static const char RocketGlueVertexShader[] = " \
 RocketSDLRenderInterfaceOpenGLES2::RocketSDLRenderInterfaceOpenGLES2(SDL_Renderer *r, SDL_Window *w) : RocketSDLRenderInterface(r,w)
 {
     #define SDL_PROC SDL_PROC_CPP
-    #define ROCKET_OPENGLES2
+    #define GLFUNCS_OPENGLES2
     #include "RocketGLFuncs.h"
     #undef SDL_PROC
-    #undef ROCKET_OPENGLES2
+    #undef GLFUNCS_OPENGLES2
 
     render_data.glGetError();
     // We call SDL_RenderClear to make sure the GL context is properly set up
@@ -275,8 +283,8 @@ void RocketSDLRenderInterfaceOpenGLES2::RenderGeometry(Rocket::Core::Vertex* ver
       newIndicies[i] = (unsigned short) indices[i];
     }
 
-    glVertexAttribPointer(ROCKETGLUE_ATTRIBUTE_POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(Rocket::Core::Vertex), &vertices[0].position);
-    glVertexAttribPointer(ROCKETGLUE_ATTRIBUTE_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Rocket::Core::Vertex), &vertices[0].colour);
+    render_data.glVertexAttribPointer(ROCKETGLUE_ATTRIBUTE_POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(Rocket::Core::Vertex), &vertices[0].position);
+    render_data.glVertexAttribPointer(ROCKETGLUE_ATTRIBUTE_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Rocket::Core::Vertex), &vertices[0].colour);
     render_data.glEnableVertexAttribArray(ROCKETGLUE_ATTRIBUTE_POSITION);
     render_data.glEnableVertexAttribArray(ROCKETGLUE_ATTRIBUTE_TEXCOORD);
     render_data.glEnableVertexAttribArray(ROCKETGLUE_ATTRIBUTE_COLOR);
@@ -285,7 +293,7 @@ void RocketSDLRenderInterfaceOpenGLES2::RenderGeometry(Rocket::Core::Vertex* ver
         sdl_texture = (SDL_Texture *) texture;
         SDL_GL_BindTexture(sdl_texture, &texw, &texh);
         render_data.glUniform1i(u_texture, 0);
-        glVertexAttribPointer(ROCKETGLUE_ATTRIBUTE_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Rocket::Core::Vertex), &vertices[0].tex_coord);
+        render_data.glVertexAttribPointer(ROCKETGLUE_ATTRIBUTE_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Rocket::Core::Vertex), &vertices[0].tex_coord);
     }
     else {
         render_data.glActiveTexture(GL_TEXTURE0);
@@ -312,18 +320,18 @@ void RocketSDLRenderInterfaceOpenGLES2::RenderGeometry(Rocket::Core::Vertex* ver
 // Called by Rocket when it wants to enable or disable scissoring to clip content.
 void RocketSDLRenderInterfaceOpenGLES2::EnableScissorRegion(bool enable)
 {
-        if (enable)
-                render_data.glEnable(GL_SCISSOR_TEST);
-        else
-                render_data.glDisable(GL_SCISSOR_TEST);
+    if (enable)
+        render_data.glEnable(GL_SCISSOR_TEST);
+    else
+        render_data.glDisable(GL_SCISSOR_TEST);
 }
 
 // Called by Rocket when it wants to change the scissor region.
 void RocketSDLRenderInterfaceOpenGLES2::SetScissorRegion(int x, int y, int width, int height)
 {
-        int w_width, w_height;
-        SDL_GetWindowSize(window, &w_width, &w_height);
-        render_data.glScissor(x, w_height - (y + height), width, height);
+    int w_width, w_height;
+    SDL_GetWindowSize(window, &w_width, &w_height);
+    render_data.glScissor(x, w_height - (y + height), width, height);
 }
 
 #endif //!SDL_RENDER_DISABLED && SDL_VIDEO_RENDER_OGL_ES2

@@ -1,6 +1,6 @@
 #include "EventChangeAppStateToGame.h"
 #include "../AppStateManager.h"
-#include "Util/CLog.h"
+#include "Util/Log.h"
 
 EventChangeAppStateToGame::EventChangeAppStateToGame(int act, int level) {
     m_act = act;

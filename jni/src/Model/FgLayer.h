@@ -2,9 +2,9 @@
     #define _FGLAYER_H_
 
 #include "Layer.h"
-#include "CUnit.h"
+#include "Unit.h"
 #include "Entry.h"
-class CUnit;
+class Unit;
 class Entry;
 
 /**
@@ -12,7 +12,7 @@ class Entry;
  */
 class FgLayer : public Layer {
     private:
-        std::vector<CUnit*> m_units;
+        std::vector<Unit*> m_units;
         std::vector<Entry*> m_entries;
 
     public:

@@ -1,19 +1,22 @@
 #include "WorldLayer.h"
 #include "../Engine/WorldContactListener.h"
+#include "../Util/Log.h"
 
 WorldLayer::WorldLayer() : Layer() {
     m_choiceGraph = new ChoiceGraph(this);
+    m_isDefault = false;
+    Log::L("Creating WorldLayer.");
 };
 
-void WorldLayer::AddUnit(CUnit* unit) {
+void WorldLayer::AddUnit(Unit* unit) {
     m_units.push_back(unit);
 };
 
-void WorldLayer::SetUnits(std::vector<CUnit*> units) {
+void WorldLayer::SetUnits(std::vector<Unit*> units) {
     m_units = units;
 };
 
-std::vector<CUnit*> WorldLayer::GetUnits() {
+std::vector<Unit*> WorldLayer::GetUnits() {
     return m_units;
 };
 
@@ -39,6 +42,14 @@ void WorldLayer::SetExits(std::vector<Exit*> exits) {
 
 std::vector<Exit*> WorldLayer::GetExits() {
     return m_exits;
+};
+
+void WorldLayer::SetDefault(bool isDefault) {
+    m_isDefault = isDefault;
+};
+
+bool WorldLayer::IsDefault() {
+    return m_isDefault;
 };
 
 ChoiceGraph* WorldLayer::GetChoiceGraph() {

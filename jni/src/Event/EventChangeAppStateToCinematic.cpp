@@ -1,6 +1,6 @@
 #include "EventChangeAppStateToCinematic.h"
 #include "../AppStateManager.h"
-#include "Util/CLog.h"
+#include "Util/Log.h"
 
 EventChangeAppStateToCinematic::EventChangeAppStateToCinematic(int id) {
     m_id = id;

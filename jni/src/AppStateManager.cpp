@@ -4,10 +4,11 @@
 #include "AppStateMain.h"
 #include "AppStateGame.h"
 #include "AppStateCinematic.h"
-#include "Util/CLog.h"
+#include "Util/Log.h"
 
 AppState* AppStateManager::m_activeAppState = 0;
 SDL_Renderer* AppStateManager::m_renderer = NULL;
+SDL_Window* AppStateManager::m_window = NULL;
 Rocket::Core::Context* AppStateManager::m_rocketContext = NULL;
 int AppStateManager::m_windowWidth = 0;
 int AppStateManager::m_windowHeight = 0;
@@ -51,7 +52,7 @@ void AppStateManager::SetActiveAppState(int appStateId) {
 }
 
 void AppStateManager::SetAppStateToGame(int act, int level) {
-    CLog::Log("AppStateManager::SetAppStateToGame");
+    Log::L("AppStateManager::SetAppStateToGame");
     SetActiveAppState(APPSTATE_GAME, false);
     if(m_activeAppState) {
             m_activeAppState->SetParams(true, act, level);
@@ -73,6 +74,10 @@ void AppStateManager::SetRenderer(SDL_Renderer* Renderer) {
     m_renderer = Renderer;
 }
 
+void AppStateManager::SetWindow(SDL_Window* Window) {
+    m_window = Window;
+};
+
 void AppStateManager::SetWindowWidth(int windowWidth) {
     m_windowWidth = windowWidth;
 }
@@ -89,12 +94,16 @@ int AppStateManager::GetWindowHeight() {
     return m_windowHeight;
 }
 
+SDL_Window* AppStateManager::GetWindow() {
+    return m_window;
+};
+
 Rocket::Core::Context* AppStateManager::GetRocketContext() {
     return m_rocketContext;
 }
 
 void AppStateManager::InitRocketContext() {
-    CLog::Log("About to create rocket context with width:%d height;%d", AppStateManager::GetWindowWidth(), AppStateManager::GetWindowHeight());
+    Log::L("About to create rocket context with width:%d height;%d", AppStateManager::GetWindowWidth(), AppStateManager::GetWindowHeight());
     m_rocketContext = RocketInit(m_renderer, "main",
             AppStateManager::GetWindowWidth(),
             AppStateManager::GetWindowHeight());

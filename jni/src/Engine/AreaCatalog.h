@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <string>
 #include "json.h"
-#include "../Model/CArea.h"
+#include "../Model/Area.h"
 
 /**
  * Defines the values for the animation.
@@ -71,7 +71,7 @@ class AreaCatalog
          * Sets the values for an area according to its nature.
          * @param area Area to set values to.
          */
-        static void Set(CArea* area);
+        static void Set(Area* area);
 
     private:
         static void BuildCatalog(Json::Value root);

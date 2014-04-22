@@ -16,12 +16,14 @@ class AppStateManager {
     private:
         static AppState* m_activeAppState;
         static SDL_Renderer* m_renderer;
+        static SDL_Window* m_window;
         static Rocket::Core::Context* m_rocketContext;
         static int m_windowWidth;
         static int m_windowHeight;
 
     public:
         static void SetRenderer(SDL_Renderer* Renderer);
+        static void SetWindow(SDL_Window* Window);
         static void OnEvent(SDL_Event* Event);
         static void OnLoop();
         static void OnRender(SDL_Renderer* Renderer);
@@ -29,6 +31,7 @@ class AppStateManager {
         static int GetWindowWidth();
         static void SetWindowHeight(int windowHeight);
         static int GetWindowHeight();
+        static SDL_Window* GetWindow();
         static Rocket::Core::Context* GetRocketContext();
 
     public:

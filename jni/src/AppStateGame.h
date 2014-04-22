@@ -18,26 +18,37 @@ const float GAME_ZOOM_DEFAULT = 1.0f;
 const float GAME_ZOOM_FACTOR = 1.0f;
 
 #include "AppState.h"
-#include "Model/CScene.h"
+#include "Model/Scene.h"
+#include "Model/SceneExt.h"
 #include "Renderer/SceneRenderer.h"
 #include "Engine/Camera.h"
+#include "Engine/RayCastTool.h" //TODO: rename to SelectTool
 #include "Engine/RocketGlue.h"
  
 class AppStateGame : public AppState {
     private:
         static AppStateGame Instance;
         Camera* m_camera;
+        RayCastTool* m_selectTool;
         SceneRenderer* m_sceneRenderer;
         int m_act;
         int m_level;
-        CScene* m_scene;
+        Scene* m_scene;
+        SceneExt* m_sceneExt;
+        Vector2* m_tmpVector;
         int m_startTime;
         bool m_pause;
+        bool m_usingSelectTool;
         float m_zoom;
         SDL_Rect m_viewport;
         bool m_isZooming;
+        bool m_isTracking;
         Rocket::Core::Element* m_returnBtn;
         Rocket::Core::Element* m_pauseBtn;
+        Rocket::Core::Element* m_selectBtn;
+        Rocket::Controls::ElementForm* m_debugForm;
+        Rocket::Controls::ElementForm* m_topToolsForm;
+        Rocket::Controls::ElementForm* m_bottomToolsForm;
  
     private:
         AppStateGame();
@@ -53,11 +64,26 @@ class AppStateGame : public AppState {
         void OnDeactivate();
         void OnLoop();
         void OnRender(SDL_Renderer* renderer);
+        void Update();
         static AppStateGame* GetInstance();
+        SceneExt* GetSceneExt();
+        
+        //Events
+        void OnFingerDown(float mX, float mY, float mDX, float mDY, SDL_FingerID mFingerId);
+        void OnFingerUp(float mX, float mY, float mDX, float mDY, SDL_FingerID mFingerId);
         void OnFingerMove(float mX, float mY, float mDX, float mDY, SDL_FingerID mFingerId);
         void OnMultiGesture(float mDTheta, float mDDist, float mX, float mY, Uint16 mFingers);
-        void Pause(bool pause);
+
+        // TOOLS RELATED FUNCTIONS
+        void SetPause(bool pause);
+        bool IsPaused();
         void TogglePause();
+        void SetUsingSelectTool(bool usingSelectTool);
+        bool IsUsingSelectTool();
+        void ToggleUsingSelectTool();
+        void BeginSelection(float x, float y);
+        void EndSelection();
+        
         void SetParams(bool dummy, ...);
 };
  

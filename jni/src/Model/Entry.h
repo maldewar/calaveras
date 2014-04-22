@@ -2,8 +2,8 @@
     #define _ENTRY_H_
 
 #include <Box2D.h>
-#include "CElem.h"
-#include "../Engine/CAnimation.h"
+#include "LayeredElem.h"
+#include "../Engine/Animation.h"
 
 const int ENTRY_STATE_CLOSED  = 0;
 const int ENTRY_STATE_OPEN    = 1;
@@ -14,10 +14,10 @@ const int ENTRY_STATE_OPENING = 3;
  * Models an Entry to the scene.
  * This element creates Units in the game to interact with the scene.
  */
-class Entry : public CElem
+class Entry : public LayeredElem
 {
     private:
-        CAnimation* m_animation;
+        Animation* m_animation;
         int m_units;
         int m_capacity;
         bool m_open;
@@ -55,7 +55,7 @@ class Entry : public CElem
          * Gets the Animation instance for this Entry's actual state.
          * @returns Animation instance for this Entry's actual state.
          */
-        CAnimation* GetAnimation();
+        Animation* GetAnimation();
         /**
          * Sets the amount of Unit instances this Entry will generate.
          * @param capacity Amount of Unit instances to generate.

@@ -2,12 +2,12 @@
     #define _WORLDLAYER_H_
 
 #include "Layer.h"
-#include "CUnit.h"
+#include "Unit.h"
 #include "Entry.h"
 #include "Exit.h"
 #include "ChoiceGraph.h"
 class ChoiceGraph;
-class CUnit;
+class Unit;
 class Entry;
 
 /**
@@ -15,10 +15,11 @@ class Entry;
  */
 class WorldLayer : public Layer {
     private:
-        std::vector<CUnit*> m_units;
+        std::vector<Unit*> m_units;
         std::vector<Entry*> m_entries;
         std::vector<Exit*> m_exits;
         ChoiceGraph* m_choiceGraph;
+        bool m_isDefault;
 
     public:
         /**
@@ -37,17 +38,17 @@ class WorldLayer : public Layer {
          * Adds an Unit instance to this scene.
          * @param unit Unit instance.
          */
-        void AddUnit(CUnit* unit);
+        void AddUnit(Unit* unit);
         /**
          * Adds a list of Unit instances to this scene.
          * @param units Unit instances to add.
          */
-        void SetUnits(std::vector<CUnit*> units);
+        void SetUnits(std::vector<Unit*> units);
         /**
          * Get all the Unit instances contained in this scene.
          * @return List of Unit instances contained in this scene.
          */
-        std::vector<CUnit*> GetUnits();
+        std::vector<Unit*> GetUnits();
         /**
          * Add an Entry instance to this scene.
          * @param entry Entry instance.
@@ -78,6 +79,8 @@ class WorldLayer : public Layer {
          * @return List of Exit instances.
          */
         std::vector<Exit*> GetExits();
+        void SetDefault(bool isDefault);
+        bool IsDefault();
         /**
          * Gets the ChoiceGraph built for this layer.
          * @return ChoiceGraph built for this layer.

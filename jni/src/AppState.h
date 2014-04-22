@@ -1,7 +1,7 @@
 #ifndef __APPSTATE_H__
     #define __APPSTATE_H__
  
-#include "CEvent.h"
+#include "Event.h"
 #include <stack>
 #include "Engine/RocketGlue.h"
 
@@ -9,7 +9,7 @@
  * Defines all the possible states the app could have and
  * the methods and properties shared by all of them.
  */ 
-class AppState : public CEvent {
+class AppState : public Event {
     protected:
         Rocket::Core::ElementDocument* m_rocketDocument;
         int m_currentState;

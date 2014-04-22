@@ -23,6 +23,7 @@ class AppStateMain : public AppState {
         Rocket::Core::Element* m_test4Btn;
         Rocket::Core::Element* m_test5Btn;
         Rocket::Core::Element* m_test6Btn;
+        Rocket::Core::Element* m_test7Btn;
         Rocket::Core::Element* m_settingsBtn;
         Rocket::Core::Element* m_musicBtn;
         Rocket::Core::Element* m_soundBtn;

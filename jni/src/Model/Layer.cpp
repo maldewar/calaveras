@@ -1,10 +1,10 @@
 #include "Layer.h"
-#include "CScene.h"
+#include "Scene.h"
 
 Layer::Layer() {
     m_distance = 0;
-    m_world = new b2World(b2Vec2(CScene::GetGravity()->x,
-                    CScene::GetGravity()->y));
+    m_world = new b2World(b2Vec2(Scene::GetGravity()->x,
+                    Scene::GetGravity()->y));
 };
 
 Layer::~Layer() {
@@ -26,15 +26,15 @@ float Layer::GetDistance() {
     return m_distance;
 }
 
-void Layer::AddArea(CArea* area) {
+void Layer::AddArea(Area* area) {
     m_areas.push_back(area);
 }
 
-void Layer::SetAreas(std::vector<CArea*> areas) {
+void Layer::SetAreas(std::vector<Area*> areas) {
     m_areas = areas;
 }
 
-std::vector<CArea*> Layer::GetAreas() {
+std::vector<Area*> Layer::GetAreas() {
     return m_areas;
 }
 

@@ -1,11 +1,11 @@
 #include "Entry.h"
-#include "CUnit.h"
+#include "Unit.h"
 #include "WorldLayer.h"
-#include "../Manager/CBoxMaker.h"
+#include "../Manager/BoxMaker.h"
 #include "../Engine/AnimationCatalog.h"
-#include "../Util/CLog.h"
+#include "../Util/Log.h"
 
-Entry::Entry() : CElem() {
+Entry::Entry() : LayeredElem() {
     m_type = ELEM_TYPE_ENTRY;
     m_state = ENTRY_STATE_CLOSED;
     m_units = 0;
@@ -36,7 +36,7 @@ void Entry::SetAnimation() {
     }
 }
 
-CAnimation* Entry::GetAnimation() {
+Animation* Entry::GetAnimation() {
     return m_animation;
 }
 
@@ -168,7 +168,7 @@ void Entry::OnLoop() {
         if (m_units > 0) {
             if (m_timerRef + m_interval < SDL_GetTicks()) {
                 m_timerRef = SDL_GetTicks();
-                CUnit* unit = new CUnit(this->GetLayer());
+                Unit* unit = new Unit(this->GetLayer());
                 unit->SetX(this->GetX());
                 unit->SetY(this->GetY());
                 unit->SetBody();

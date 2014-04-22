@@ -1,7 +1,7 @@
 #include "EventSetSettings.h"
 #include "Manager/ConfigManager.h"
 #include "Engine/I18NCatalog.h"
-#include "Util/CLog.h"
+#include "Util/Log.h"
 
 EventSetSettings::EventSetSettings(AppState* appState) {
     m_appState = appState;
@@ -23,8 +23,14 @@ void EventSetSettings::ProcessEvent(Rocket::Core::Event& event) {
         ConfigManager::SetMusicEnabled(GetBoolParam(musicParam, ConfigManager::IsMusicEnabled()));
     }
     std::string soundParam = event.GetParameter<Rocket::Core::String>("sound","").CString();
+    Log::L("Turning sound %s .", soundParam.c_str());
     if (!soundParam.empty()) {
         ConfigManager::SetSoundEnabled(GetBoolParam(soundParam, ConfigManager::IsSoundEnabled()));
+    }
+    std::string dGraphParam = event.GetParameter<Rocket::Core::String>("dgraph","").CString();
+    Log::L("Turning dGraph %s .", dGraphParam.c_str());
+    if (!dGraphParam.empty()) {
+        ConfigManager::SetDebugDrawGraphEnabled(GetBoolParam(dGraphParam, ConfigManager::IsDebugDrawGraphEnabled()));
     }
     if (m_callPopState)
         m_appState->PopState();

@@ -1,6 +1,6 @@
 #include "CompositeRenderer.h"
 #include "../Util/CMath.h"
-#include "../Util/CLog.h"
+#include "../Util/Log.h"
 #include "../Util/TextureUtil.h"
 #include "../Util/SurfaceUtil.h"
 

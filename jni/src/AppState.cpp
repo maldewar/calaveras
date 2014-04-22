@@ -1,6 +1,6 @@
 #include "AppState.h"
 #include "AppStateManager.h"
-#include "Util/CLog.h"
+#include "Util/Log.h"
 
 AppState::AppState() {
     m_rocketDocument = NULL;
@@ -78,7 +78,7 @@ void AppState::OnPopState(int state) {
 }
 
 void AppState::SetParams(bool dummy, ...) {
-    CLog::Log("AppState::SetParams");
+    Log::L("AppState::SetParams");
     //Pure virtual, do nothing
 }
 

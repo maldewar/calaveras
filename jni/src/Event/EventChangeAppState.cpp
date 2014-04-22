@@ -1,6 +1,6 @@
 #include "EventChangeAppState.h"
 #include "../AppStateManager.h"
-#include "Util/CLog.h"
+#include "Util/Log.h"
 
 EventChangeAppState::EventChangeAppState(int appState) {
     m_appState = appState;

@@ -1,5 +1,5 @@
 #include "EventPushStateOnClick.h"
-#include "Util/CLog.h"
+#include "Util/Log.h"
 
 EventPushStateOnClick::EventPushStateOnClick(AppState* appState, int state, bool callUpdate) {
     m_appState = appState;

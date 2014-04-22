@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <string>
 #include "json.h"
-#include "CAnimation.h"
+#include "Animation.h"
 
 /**
  * Defines the values for the animation.
@@ -53,13 +53,13 @@ struct AnimationDef {
      */
     int tilesY;
     /**
-     * Width in pixels for each frame.
+     * Width in meters for each frame.
      */
-    int tileWidth;
+    float tileWidth;
     /**
-     * Height in pixels for each frame.
+     * Height in meters for each frame.
      */
-    int tileHeight;
+    float tileHeight;
     /**
      * Offset in the X axis in pixels to locate the frames.
      */
@@ -68,6 +68,14 @@ struct AnimationDef {
      * Offset in the Y axis in pixels to locate the frames.
      */
     int offsetY;
+    /**
+     * Category for the image file.
+     */
+    std::string fileCategory;
+    /**
+     * Path relative to the category folder to the image file.
+     */
+    std::string filePath;
     /**
      * Path to the image file.
      */
@@ -84,7 +92,7 @@ class AnimationCatalog
         static SDL_Renderer* m_renderer;
         static std::string m_filename;
         static std::unordered_map<int, AnimationDef> m_animDef;
-        static std::unordered_map<int, CSprite*> m_animSprite;
+        static std::unordered_map<int, Sprite*> m_animSprite;
 
     public:
         /**
@@ -101,24 +109,24 @@ class AnimationCatalog
          * Gets an animation given an element type.
          * @param type Type of element.
          */
-        static CAnimation* GetByType(int type);
+        static Animation* GetByType(int type);
         /**
          * Gets an animation given an element type and its state.
          * @param type Type of element.
          * @param state State of the element.
          */
-        static CAnimation* GetByState(int type, int state);
+        static Animation* GetByState(int type, int state);
         /**
          * Gets an animation given an element type, its state and substate.
          * @param type Type of element.
          * @param state State of the element.
          * @param substate Substate of the element.
          */
-        static CAnimation* GetBySubstate(int type, int state, int substate);
+        static Animation* GetBySubstate(int type, int state, int substate);
 
     private:
         static void BuildCatalog(Json::Value root);
-        static CAnimation* GetAnimation(int type, int state, int substate);
+        static Animation* GetAnimation(int type, int state, int substate);
         
 };
 #endif

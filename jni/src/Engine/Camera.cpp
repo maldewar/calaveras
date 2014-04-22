@@ -1,7 +1,11 @@
 #include "Camera.h"
-#include "../Util/CLog.h"
+#include "../Util/Log.h"
 
 Camera::Camera() {
+    Reset();
+};
+
+void Camera::Reset() {
     m_w = 0;
     m_h = 0;
     m_zoom = ZOOM_DEFAULT;
@@ -17,6 +21,8 @@ Camera::Camera() {
     m_viewport->h = m_h;
     m_sceneW = 0;
     m_sceneH = 0;
+    m_sceneWM = 0;
+    m_sceneHM = 0;
     m_topBound    = 0;
     m_bottomBound = 0;
     m_leftBound   = 0;
@@ -39,12 +45,14 @@ void Camera::SetHeight(float height) {
 };
 
 void Camera::SetSceneWidth(float sceneWidth) {
-    m_sceneW = sceneWidth;
+    m_sceneWM = sceneWidth;
+    m_sceneW = CMath::MToPx(sceneWidth);
     SetBounds();
 };
 
 void Camera::SetSceneHeight(float sceneHeight) {
-    m_sceneH = sceneHeight;
+    m_sceneHM = sceneHeight;
+    m_sceneH = CMath::MToPx(sceneHeight);
     SetBounds();
 };
 
@@ -154,4 +162,11 @@ void Camera::UpdateViewport() {
         m_viewport->y = m_y;
     if (m_h + m_y >= m_h)
         m_viewport->h = m_h / m_zoom + m_y;
+};
+
+Vector2* Camera::GetWorldPosition(double x, double y) {
+    Vector2* vector = new Vector2();
+    vector->x = CMath::PxToM(m_x + (m_w * x / m_zoom));
+    vector->y = CMath::ToCanvas(CMath::PxToM(m_y + (m_h * y / m_zoom)), m_sceneHM);
+    return vector;
 };
